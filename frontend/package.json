@@ -1,0 +1,40 @@
+{
+  "name": "auto-score",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@autonomys/auto-id": "^0.2.0",
+    "@autonomys/auto-utils": "^0.2.0",
+    "@peculiar/webcrypto": "^1.5.0",
+    "@polkadot/api": "^12.3.1",
+    "@polkadot/keyring": "^13.0.2",
+    "@polkadot/util-crypto": "^13.0.2",
+    "crypto-js": "^4.2.0",
+    "next": "14.2.5",
+    "react": "^18",
+    "react-dom": "^18",
+    "usehooks-ts": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.5",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  },
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false
+  }
+}
