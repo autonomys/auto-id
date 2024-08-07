@@ -1,34 +1,33 @@
 "use client";
 import { LogIn } from "@/components/LogIn";
-import { CreateKeyring } from "@/components/CreateKeyring";
+import { CreateKeypair } from "@/components/CreateKeypair";
 import type { EncryptedKeypair } from "@/types/keyring";
 import { useLocalStorage, useSessionStorage } from "usehooks-ts";
 import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import { BlurredBackground } from "@/components/BlurredBackground";
-import Image from "next/image";
 import dynamic from "next/dynamic";
 
 function Login() {
-  const [hasEncryptedKeyring, setHasEncryptedKeyring] = useState<
+  const [hasEncryptedKeypair, setHasEncryptedKeypair] = useState<
     boolean | undefined
   >(undefined);
 
-  const [encryptedKeyring] = useLocalStorage<EncryptedKeypair | null>(
-    "encrypted-keyring",
+  const [encryptedKeypair] = useLocalStorage<EncryptedKeypair | null>(
+    "encrypted-keypair",
     null
   );
-  const [keyring] = useSessionStorage("keyring", null);
+  const [keypair] = useSessionStorage("keypair", null);
 
   useEffect(() => {
-    if (keyring) {
+    if (keypair) {
       redirect("/auto-score");
     }
-  }, [keyring]);
+  }, [keypair]);
 
   useEffect(() => {
-    setHasEncryptedKeyring(!!encryptedKeyring);
-  }, [encryptedKeyring]);
+    setHasEncryptedKeypair(!!encryptedKeypair);
+  }, [encryptedKeypair]);
 
   return (
     <div className="h-screen w-screen flex-col">
@@ -37,9 +36,9 @@ function Login() {
         <h1 className="text-4xl">Autonomys</h1>
       </header>
       <main className="h-[92.5%] w-full flex justify-center items-center relative">
-        {hasEncryptedKeyring === undefined && <>Loading...</>}
-        {hasEncryptedKeyring === false && <CreateKeyring />}
-        {hasEncryptedKeyring === true && <LogIn />}
+        {hasEncryptedKeypair === undefined && <>Loading...</>}
+        {hasEncryptedKeypair === false && <CreateKeypair />}
+        {hasEncryptedKeypair === true && <LogIn />}
         <BlurredBackground />
       </main>
     </div>

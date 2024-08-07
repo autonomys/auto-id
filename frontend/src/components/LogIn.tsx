@@ -7,11 +7,11 @@ export const LogIn = () => {
   const [password, setPassword] = useState<string>("");
   const [passwordError, setPasswordError] = useState<boolean>(false);
   const [encryptedKeypair] = useLocalStorage<EncryptedKeypair | null>(
-    "encrypted-keyring",
+    "encrypted-keypair",
     null
   );
-  const [_, setKeyring] = useSessionStorage<SerializableKeypair | null>(
-    "keyring",
+  const [_, setKeypair] = useSessionStorage<SerializableKeypair | null>(
+    "keypair",
     null
   );
 
@@ -27,11 +27,11 @@ export const LogIn = () => {
           .toString()
       );
 
-      setKeyring(keypair);
+      setKeypair(keypair);
     } catch (error) {
       setPasswordError(true);
     }
-  }, [encryptedKeypair, password, setKeyring]);
+  }, [encryptedKeypair, password, setKeypair]);
 
   return (
     <div className="flex flex-col border border-black rounded p-4 md:w-[40%] min-h-[40%] w-9/10 justify-around items-center gap-4 bg-slate-50">

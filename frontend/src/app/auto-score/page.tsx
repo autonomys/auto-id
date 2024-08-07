@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 
 function AutoScore() {
   const [keypair] = useSessionStorage<SerializableKeypair | null>(
-    "keyring",
+    "keypair",
     null
   );
 
