@@ -21,7 +21,7 @@ function AutoScore() {
     <AppWrapper extendedClassName="flex-col gap-2">
       <div className="md:w-[60%] w-9/10">
         <a
-          href={`${window.location.pathname}/new`}
+          href={`${window.location.pathname}/create`}
           className={`text-white bg-primary py-1 px-4 rounded-md text-xl hover:opacity-80 hover:scale-101 flex items-center gap-1 w-content`}
         >
           NEW
