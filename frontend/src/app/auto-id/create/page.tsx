@@ -1,5 +1,3 @@
-import { AppWrapper } from "../../../components/AppWrapper";
-
 export default function NewAutoId() {
   const providerClassNames =
     "aspect-square hover:opacity-85 hover:cursor-pointer w-1/4 bg-white rounded";
