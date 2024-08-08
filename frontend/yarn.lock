@@ -79,6 +79,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@heroicons/react@npm:^2.1.1":
+  version: 2.1.5
+  resolution: "@heroicons/react@npm:2.1.5"
+  peerDependencies:
+    react: ">= 16"
+  checksum: 10c0/d0ca2d017545da103ed8e90e9e6679d46329c1b09bb4c06ff509b0fe7cfbba7034409ea24b0469fabd2a0a9b144e8e717f58de924615e0b0a1bed7b51fcc5940
+  languageName: node
+  linkType: hard
+
 "@humanwhocodes/config-array@npm:^0.11.14":
   version: 0.11.14
   resolution: "@humanwhocodes/config-array@npm:0.11.14"
@@ -1798,6 +1807,7 @@ __metadata:
   dependencies:
     "@autonomys/auto-id": "npm:^0.2.0"
     "@autonomys/auto-utils": "npm:^0.2.0"
+    "@heroicons/react": "npm:^2.1.1"
     "@peculiar/webcrypto": "npm:^1.5.0"
     "@polkadot/api": "npm:^12.3.1"
     "@polkadot/keyring": "npm:^13.0.2"

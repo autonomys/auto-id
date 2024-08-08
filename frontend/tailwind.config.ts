@@ -27,6 +27,7 @@ const config: Config = {
       width: {
         128: "32rem",
         192: "48rem",
+        content: "fit-content",
       },
       borderRadius: {
         circle: "100%",
