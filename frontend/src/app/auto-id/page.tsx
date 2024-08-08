@@ -1,16 +1,13 @@
 "use client";
 
 import { useSessionStorage } from "usehooks-ts";
-import { SerializableKeypair } from "../../types/keyring";
+import { HexPrivateKey } from "../../types/keyring";
 import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
 function AutoScore() {
-  const [keypair] = useSessionStorage<SerializableKeypair | null>(
-    "keypair",
-    null
-  );
+  const [keypair] = useSessionStorage<HexPrivateKey | null>("keypair", null);
 
   if (!keypair) {
     redirect("/");

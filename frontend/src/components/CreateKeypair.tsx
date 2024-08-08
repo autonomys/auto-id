@@ -1,17 +1,18 @@
 import { useLocalStorage, useSessionStorage } from "usehooks-ts";
-import { EncryptedKeypair, SerializableKeypair } from "@/types/keyring";
+import { EncryptedPrivateKey, HexPrivateKey } from "@/types/keyring";
 import { useCallback, useState } from "react";
-import { ed25519PairFromSeed } from "@polkadot/util-crypto";
-import { AES } from "crypto-js";
-import { randomBytes } from "crypto";
-import { u8aToHex } from "@autonomys/auto-utils";
-
+import {
+  cryptoKeyToPem,
+  generateRsaKeyPair,
+  keyToHex,
+  pemToPrivateKey,
+} from "@autonomys/auto-id";
 export const CreateKeypair = () => {
-  const [, setEncryptedKeypair] = useLocalStorage<EncryptedKeypair | null>(
+  const [, setEncryptedKeypair] = useLocalStorage<EncryptedPrivateKey | null>(
     "encrypted-keypair",
     null
   );
-  const [, setKeypair] = useSessionStorage<SerializableKeypair | null>(
+  const [, setKeypair] = useSessionStorage<HexPrivateKey | null>(
     "keypair",
     null
   );
@@ -19,19 +20,15 @@ export const CreateKeypair = () => {
   const [password, setPassword] = useState<string>("");
 
   const onCreateKeypair = useCallback(async () => {
-    const keypair = ed25519PairFromSeed(randomBytes(32));
-    const storableKeypair: SerializableKeypair = {
-      hexPublicKey: u8aToHex(keypair.publicKey),
-      hexSecretKey: u8aToHex(keypair.publicKey),
-    };
+    const keypair = await generateRsaKeyPair(2048);
 
-    const encryptedKeypair = AES.encrypt(
-      JSON.stringify(storableKeypair),
-      password
-    ).toString();
+    const encryptedKeypair = await cryptoKeyToPem(keypair.privateKey, password);
 
+    const privateKey = await pemToPrivateKey(encryptedKeypair, password);
+    const privateKeyHex = await keyToHex(privateKey);
+
+    setKeypair({ data: privateKeyHex });
     setEncryptedKeypair({ data: encryptedKeypair });
-    setKeypair(storableKeypair);
   }, [password, setEncryptedKeypair, setKeypair]);
 
   return (

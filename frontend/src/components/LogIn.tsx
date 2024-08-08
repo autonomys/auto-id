@@ -1,33 +1,31 @@
 import { AES, enc } from "crypto-js";
 import { useCallback, useState } from "react";
 import { useLocalStorage, useSessionStorage } from "usehooks-ts";
-import { EncryptedKeypair, SerializableKeypair } from "@/types/keyring";
+import { EncryptedPrivateKey, HexPrivateKey } from "@/types/keyring";
+import { keyToHex, pemToPrivateKey } from "@autonomys/auto-id";
 
 export const LogIn = () => {
   const [password, setPassword] = useState<string>("");
   const [passwordError, setPasswordError] = useState<boolean>(false);
-  const [encryptedKeypair] = useLocalStorage<EncryptedKeypair | null>(
+  const [encryptedKeypair] = useLocalStorage<EncryptedPrivateKey | null>(
     "encrypted-keypair",
     null
   );
-  const [_, setKeypair] = useSessionStorage<SerializableKeypair | null>(
+  const [_, setKeypair] = useSessionStorage<HexPrivateKey | null>(
     "keypair",
     null
   );
 
-  const onUnlock = useCallback(() => {
+  const onUnlock = useCallback(async () => {
     if (!encryptedKeypair) {
       throw new Error("No encrypted keypair found");
     }
 
     try {
-      const keypair: SerializableKeypair = JSON.parse(
-        AES.decrypt(encryptedKeypair.data, password)
-          .toString(enc.Utf8)
-          .toString()
-      );
+      const keypair = await pemToPrivateKey(encryptedKeypair.data, password);
+      const privateKey = { data: await keyToHex(keypair) };
 
-      setKeypair(keypair);
+      setKeypair(privateKey);
     } catch (error) {
       setPasswordError(true);
     }

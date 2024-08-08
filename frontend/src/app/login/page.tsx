@@ -1,7 +1,7 @@
 "use client";
 import { LogIn } from "@/components/LogIn";
 import { CreateKeypair } from "@/components/CreateKeypair";
-import type { EncryptedKeypair } from "@/types/keyring";
+import type { EncryptedPrivateKey } from "@/types/keyring";
 import { useLocalStorage, useSessionStorage } from "usehooks-ts";
 import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
@@ -12,7 +12,7 @@ function Login() {
     boolean | undefined
   >(undefined);
 
-  const [encryptedKeypair] = useLocalStorage<EncryptedKeypair | null>(
+  const [encryptedKeypair] = useLocalStorage<EncryptedPrivateKey | null>(
     "encrypted-keypair",
     null
   );

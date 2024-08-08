@@ -1,8 +1,7 @@
-export interface EncryptedKeypair {
+export interface EncryptedPrivateKey {
   data: string;
 }
 
-export interface SerializableKeypair {
-  hexPublicKey: string;
-  hexSecretKey: string;
+export interface HexPrivateKey {
+  data: string;
 }
