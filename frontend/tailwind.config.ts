@@ -29,6 +29,9 @@ const config: Config = {
         192: "48rem",
         content: "fit-content",
       },
+      height: {
+        content: "fit-content",
+      },
       borderRadius: {
         circle: "100%",
       },

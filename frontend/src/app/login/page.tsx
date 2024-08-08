@@ -6,7 +6,6 @@ import { useLocalStorage, useSessionStorage } from "usehooks-ts";
 import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 import dynamic from "next/dynamic";
-import { AppWrapper } from "@/components/AppWrapper";
 
 function Login() {
   const [hasEncryptedKeypair, setHasEncryptedKeypair] = useState<
@@ -30,11 +29,11 @@ function Login() {
   }, [encryptedKeypair]);
 
   return (
-    <AppWrapper>
+    <>
       {hasEncryptedKeypair === undefined && <>Loading...</>}
       {hasEncryptedKeypair === false && <CreateKeypair />}
       {hasEncryptedKeypair === true && <LogIn />}
-    </AppWrapper>
+    </>
   );
 }
 
