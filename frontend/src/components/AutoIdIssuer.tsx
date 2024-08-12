@@ -55,7 +55,7 @@ export default function AutoIdIssuer({ autoId }: AutoIdIssuerProps) {
         keyPair: { privateKey, publicKey: nativePubKey },
       }).then((certificate) => {
         console.log(certificate.toString());
-        setCertificate(certificate.toString());
+        setCertificate(certificate.toString("pem"));
       });
     });
   }, [keypairPem]);
