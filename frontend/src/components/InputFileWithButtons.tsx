@@ -13,19 +13,21 @@ export const InputFileWithButtons = ({
   name,
   value,
   copyMessage,
+  downloadFilename,
 }: PropsWithoutRef<{
   className?: string;
   name: string;
   value: string | null;
   placeholder: string;
   copyMessage: string;
+  downloadFilename?: string;
 }>) => {
   const [, updateClipboard] = useCopyToClipboard();
 
   const copyToClipboard = useCallback(() => {
     toast(copyMessage);
     value && updateClipboard(value);
-  }, [copyMessage]);
+  }, [copyMessage, value, updateClipboard]);
 
   const url = useMemo(() => {
     if (!value) return;
@@ -45,7 +47,7 @@ export const InputFileWithButtons = ({
           <span className="overflow-hidden text-ellipsis text-nowrap">
             {name}
           </span>
-          <a download="certificate.pem" href={url} target="_blank">
+          <a download={downloadFilename || name} href={url} target="_blank">
             <ArrowDownTrayIcon className="size-6 hover:cursor-pointer absolute right-12 top-0 bottom-0 m-auto" />
           </a>
           <Square2StackIcon

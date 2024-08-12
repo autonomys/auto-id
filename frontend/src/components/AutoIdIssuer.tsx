@@ -100,6 +100,7 @@ export default function AutoIdIssuer({ autoId }: AutoIdIssuerProps) {
             name={`x509 certificate (${certificateHash})`}
             placeholder={"No certificate"}
             copyMessage="Certificate copied to clipboard"
+            downloadFilename={`cert-${certificateHash}.pem`}
           />
         </div>
       </div>
