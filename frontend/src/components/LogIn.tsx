@@ -2,7 +2,7 @@ import { AES, enc } from "crypto-js";
 import { useCallback, useState } from "react";
 import { useLocalStorage, useSessionStorage } from "usehooks-ts";
 import { EncryptedPrivateKey, HexPrivateKey } from "@/types/keyring";
-import { keyToHex, pemToPrivateKey } from "@autonomys/auto-id";
+import { cryptoKeyToPem, keyToHex, pemToPrivateKey } from "@autonomys/auto-id";
 
 export const LogIn = () => {
   const [password, setPassword] = useState<string>("");
@@ -22,11 +22,17 @@ export const LogIn = () => {
     }
 
     try {
-      const keypair = await pemToPrivateKey(encryptedKeypair.data, password);
-      const privateKey = { data: await keyToHex(keypair) };
+      const keypair = await pemToPrivateKey(
+        encryptedKeypair.data,
+        { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+        password
+      );
 
-      setKeypair(privateKey);
+      const privateKey = await cryptoKeyToPem(keypair);
+
+      setKeypair({ data: privateKey });
     } catch (error) {
+      console.error(error);
       setPasswordError(true);
     }
   }, [encryptedKeypair, password, setKeypair]);

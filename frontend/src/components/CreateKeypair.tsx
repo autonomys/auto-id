@@ -1,12 +1,8 @@
 import { useLocalStorage, useSessionStorage } from "usehooks-ts";
 import { EncryptedPrivateKey, HexPrivateKey } from "@/types/keyring";
 import { useCallback, useState } from "react";
-import {
-  cryptoKeyToPem,
-  generateRsaKeyPair,
-  keyToHex,
-  pemToPrivateKey,
-} from "@autonomys/auto-id";
+import { cryptoKeyToPem, generateRsaKeyPair } from "@autonomys/auto-id";
+
 export const CreateKeypair = () => {
   const [, setEncryptedKeypair] = useLocalStorage<EncryptedPrivateKey | null>(
     "encrypted-keypair",
@@ -21,13 +17,10 @@ export const CreateKeypair = () => {
 
   const onCreateKeypair = useCallback(async () => {
     const keypair = await generateRsaKeyPair(2048);
-
     const encryptedKeypair = await cryptoKeyToPem(keypair.privateKey, password);
+    const keypairPem = await cryptoKeyToPem(keypair.privateKey);
 
-    const privateKey = await pemToPrivateKey(encryptedKeypair, password);
-    const privateKeyHex = await keyToHex(privateKey);
-
-    setKeypair({ data: privateKeyHex });
+    setKeypair({ data: keypairPem });
     setEncryptedKeypair({ data: encryptedKeypair });
   }, [password, setEncryptedKeypair, setKeypair]);
 

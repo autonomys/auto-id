@@ -1,8 +1,19 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { InputFileWithButtons } from "./InputFileWithButtons";
+import { useSessionStorage } from "usehooks-ts";
+import {
+  pemToPrivateKey,
+  createAndSignCSR,
+  cryptoKeyPairFromPrivateKey,
+  issueCertificate,
+} from "@autonomys/auto-id";
 import { InputWithCopyButton } from "./InputWithCopyButton";
-import { redirect } from "next/navigation";
+import { HexPrivateKey } from "../types/keyring";
+import { Crypto } from "@peculiar/webcrypto";
+import blake2b from "blake2b";
+
+const crypto = new Crypto();
 
 export interface AutoIdIssuerProps {
   autoId: string;
@@ -12,12 +23,42 @@ export default function AutoIdIssuer({ autoId }: AutoIdIssuerProps) {
   const [certificate, setCertificate] = useState<string | null>(null);
   const [issuing, setIssuing] = useState<boolean>(false);
 
-  const onIssueCertificate = useCallback(() => {
-    setCertificate(
-      // To-do: generate a valid certificate
-      "-----BEGIN CERTIFICATE-----\n\nMIIFSDCCBDCg........................................\n\n-----END CERTIFICATE-----"
+  const [keypairPem] = useSessionStorage<HexPrivateKey | null>("keypair", null);
+
+  const onIssueCertificate = useCallback(async () => {
+    if (!keypairPem?.data) {
+      throw new Error("No keypair found");
+    }
+    const algorithm = {
+      name: "RSASSA-PKCS1-v1_5",
+      hash: "SHA-256",
+    };
+
+    const privateKey = await pemToPrivateKey(keypairPem.data, algorithm);
+
+    const keypair = await cryptoKeyPairFromPrivateKey(privateKey, algorithm);
+
+    const pubkey = await window.crypto.subtle.exportKey(
+      "spki",
+      keypair.publicKey
     );
-  }, []);
+    const nativePubKey = await window.crypto.subtle.importKey(
+      "spki",
+      pubkey,
+      algorithm,
+      true,
+      ["verify"]
+    );
+
+    createAndSignCSR(autoId, keypair).then((csr) => {
+      issueCertificate(csr, {
+        keyPair: { privateKey, publicKey: nativePubKey },
+      }).then((certificate) => {
+        console.log(certificate.toString());
+        setCertificate(certificate.toString());
+      });
+    });
+  }, [keypairPem]);
 
   const onIssueAutoId = useCallback(() => {
     setIssuing(true);
@@ -28,6 +69,17 @@ export default function AutoIdIssuer({ autoId }: AutoIdIssuerProps) {
       window.location.assign("/auto-id");
     }, 2000);
   }, []);
+
+  const certificateHash = useMemo(() => {
+    if (!certificate) {
+      return null;
+    }
+
+    return blake2b(16)
+      .update(Buffer.from(certificate))
+      .digest("hex")
+      .slice(0, 8);
+  }, [certificate]);
 
   return (
     <div className="flex flex-col border border-black rounded md:w-[60%] min-h-[60%] w-9/10 items-center justify-between gap-4 bg-slate-50">
@@ -45,7 +97,7 @@ export default function AutoIdIssuer({ autoId }: AutoIdIssuerProps) {
           </div>
           <InputFileWithButtons
             value={certificate}
-            name="Certificate"
+            name={`x509 certificate (${certificateHash})`}
             placeholder={"No certificate"}
             copyMessage="Certificate copied to clipboard"
           />

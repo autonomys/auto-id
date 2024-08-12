@@ -36,21 +36,21 @@ export const InputFileWithButtons = ({
 
   return (
     <div
-      className={`flex flex-row justify-between items-center bg-white p-2 gap-2 w-full rounded border border-black ${className} ${
+      className={`flex flex-row relative justify-between items-center bg-white p-2 gap-2 w-full rounded border border-black ${className} ${
         !value && "opacity-50"
       }`}
     >
       {value ? (
         <>
-          <span className="overflow-hidden text-ellipsis w-2/3 text-nowrap">
+          <span className="overflow-hidden text-ellipsis text-nowrap">
             {name}
           </span>
           <a download="certificate.pem" href={url} target="_blank">
-            <ArrowDownTrayIcon className="size-6 hover:cursor-pointer" />
+            <ArrowDownTrayIcon className="size-6 hover:cursor-pointer absolute right-12 top-0 bottom-0 m-auto" />
           </a>
           <Square2StackIcon
             onClick={copyToClipboard}
-            className="size-6 hover:cursor-pointer"
+            className="size-6 hover:cursor-pointer absolute right-4 top-0 bottom-0 m-auto"
           />
         </>
       ) : (
