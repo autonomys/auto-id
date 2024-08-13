@@ -10,20 +10,31 @@ import {
 } from "@autonomys/auto-id";
 import { InputWithCopyButton } from "./InputWithCopyButton";
 import { HexPrivateKey } from "../types/keyring";
-import { Crypto } from "@peculiar/webcrypto";
 import blake2b from "blake2b";
-
-const crypto = new Crypto();
+import { RegisterAutoIdResponseBody } from "../app/api/auto-id/route";
+import { addLocalAutoID } from "../services/autoid";
+import { redirect } from "next/navigation";
 
 export interface AutoIdIssuerProps {
   autoId: string;
+  provider: string;
+  uuid: string;
 }
 
-export default function AutoIdIssuer({ autoId }: AutoIdIssuerProps) {
+export default function AutoIdIssuer({
+  autoId,
+  provider,
+  uuid,
+}: AutoIdIssuerProps) {
   const [certificate, setCertificate] = useState<string | null>(null);
   const [issuing, setIssuing] = useState<boolean>(false);
 
   const [keypairPem] = useSessionStorage<HexPrivateKey | null>("keypair", null);
+  const [issuingError, setIssuingError] = useState<
+    | (RegisterAutoIdResponseBody &
+        ({ status: "error" } | { status: "unknownError" }))
+    | null
+  >(null);
 
   const onIssueCertificate = useCallback(async () => {
     if (!keypairPem?.data) {
@@ -54,21 +65,37 @@ export default function AutoIdIssuer({ autoId }: AutoIdIssuerProps) {
       issueCertificate(csr, {
         keyPair: { privateKey, publicKey: nativePubKey },
       }).then((certificate) => {
-        console.log(certificate.toString());
         setCertificate(certificate.toString("pem"));
       });
     });
   }, [keypairPem]);
 
-  const onIssueAutoId = useCallback(() => {
+  const onIssueAutoId = useCallback(async () => {
     setIssuing(true);
+    setIssuingError(null);
 
-    // To-do: issue the Auto-ID
-    setTimeout(() => {
-      setIssuing(false);
+    const response = await fetch("http://localhost:3000/api/auto-id", {
+      method: "POST",
+      body: JSON.stringify({ certificatePem: certificate }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data: RegisterAutoIdResponseBody = await response.json();
+
+    if (data.status === "success") {
+      addLocalAutoID({
+        provider,
+        uuid,
+        autoId,
+      });
       window.location.assign("/auto-id");
-    }, 2000);
-  }, []);
+    } else {
+      setIssuingError(data);
+    }
+    setIssuing(false);
+  }, [certificate]);
 
   const certificateHash = useMemo(() => {
     if (!certificate) {
@@ -104,7 +131,7 @@ export default function AutoIdIssuer({ autoId }: AutoIdIssuerProps) {
           />
         </div>
       </div>
-      <div className="p-8">
+      <div className="p-8 flex flex-col gap-4">
         {certificate && (
           <button
             onClick={onIssueAutoId}
@@ -120,6 +147,14 @@ export default function AutoIdIssuer({ autoId }: AutoIdIssuerProps) {
           >
             Issue Certificate
           </button>
+        )}
+        {issuingError && (
+          <p className="text-center text-red-400">
+            {issuingError.status === "error"
+              ? `Error registering Auto-ID: ${issuingError.errorName}`
+              : `Unknown error registering Auto-ID. If
+            this persists, please contact support.`}
+          </p>
         )}
       </div>
     </div>

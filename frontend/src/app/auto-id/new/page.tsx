@@ -8,5 +8,5 @@ export default function NewAutoId({
 }) {
   const autoId = generateAutoID(provider, uuid);
 
-  return <AutoIdIssuer autoId={autoId} />;
+  return <AutoIdIssuer autoId={autoId} uuid={uuid} provider={provider} />;
 }
