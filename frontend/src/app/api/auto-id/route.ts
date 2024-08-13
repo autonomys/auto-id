@@ -6,6 +6,7 @@ import {
 } from "@autonomys/auto-id";
 import { ApiPromise, createConnection, Keyring } from "@autonomys/auto-utils";
 import { getEnv } from "../../../utils/getEnv";
+import { getDomainApi } from "../../../services/autoid";
 
 type RegisterAutoIdRequestBody = {
   certificatePem: string;
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
   try {
     const body: RegisterAutoIdRequestBody = await req.json();
 
-    const api = await createConnection(getEnv("RPC_ENDPOINT"));
+    const api = await getDomainApi();
 
     const submitableExtrinsic = registerAutoId(
       api,

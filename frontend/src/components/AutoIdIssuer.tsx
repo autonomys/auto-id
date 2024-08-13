@@ -71,6 +71,8 @@ export default function AutoIdIssuer({
   }, [keypairPem]);
 
   const onIssueAutoId = useCallback(async () => {
+    if (!certificate) return;
+
     setIssuing(true);
     setIssuingError(null);
 
@@ -89,6 +91,7 @@ export default function AutoIdIssuer({
         provider,
         uuid,
         autoId,
+        certificatePem: certificate,
       });
       window.location.assign("/auto-id");
     } else {
@@ -110,7 +113,7 @@ export default function AutoIdIssuer({
 
   return (
     <div className="flex flex-col border border-black rounded md:w-[60%] min-h-[60%] w-9/10 items-center justify-between gap-4 bg-slate-50">
-      <div className="w-1/3 flex flex-col gap-4 p-4">
+      <div className="w-1/2 flex flex-col gap-4 p-4">
         <h1 className="text-2xl text-center mb-8">Auto-ID Preview</h1>
         <div className="flex flex-col gap-2">
           <div className="flex flex-row">

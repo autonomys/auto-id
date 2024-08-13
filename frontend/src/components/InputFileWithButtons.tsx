@@ -16,7 +16,7 @@ export const InputFileWithButtons = ({
   downloadFilename,
 }: PropsWithoutRef<{
   className?: string;
-  name: string;
+  name: string | null;
   value: string | null;
   placeholder: string;
   copyMessage: string;
