@@ -4,7 +4,9 @@ import { getEnv } from "../../utils/getEnv";
 
 export const AUTH_URL = `https://discord.com/oauth2/authorize?client_id=${getEnv(
   "DISCORD_AUTH_CLIENT_ID"
-)}&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauto-id%2Fnew%2Fdiscord&scope=identify+email`;
+)}&response_type=code&redirect_uri=${encodeURIComponent(
+  "DISCORD_AUTH_REDIRECT_URI"
+)}&scope=identify+email`;
 
 interface DiscordAcessTokenResponse {
   access_token: string;
