@@ -12,28 +12,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@autonomys/auto-id@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "@autonomys/auto-id@npm:0.2.0"
+"@autonomys/auto-id@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@autonomys/auto-id@npm:0.3.0"
   dependencies:
-    "@autonomys/auto-utils": "npm:^0.2.0"
+    "@autonomys/auto-utils": "npm:^0.3.0"
     "@peculiar/asn1-schema": "npm:^2.3.8"
     "@peculiar/asn1-x509": "npm:^2.3.8"
     "@peculiar/webcrypto": "npm:^1.5.0"
     "@peculiar/x509": "npm:^1.11.0"
     dotenv: "npm:^16.4.5"
-  checksum: 10c0/4fb3e6368fcb1fe88adb5a8373af951828e6222f2094ae991d37b742750e194413e8c0de96c62d9a5b9eafadad9de47e311837f70e95fe2f1bdaae3ad8f22a5e
+    node-forge: "npm:^1.3.1"
+  checksum: 10c0/777f9b83fa7bf7bf48624e0f6a79ce64257f3f0e5533e19d1b072fbb6ff02132e8e144b3811834b3b04b31afb68fc83b60ab315d929ca6a0888e2921c0a5860f
   languageName: node
   linkType: hard
 
-"@autonomys/auto-utils@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "@autonomys/auto-utils@npm:0.2.0"
+"@autonomys/auto-utils@npm:^0.3.0":
+  version: 0.3.0
+  resolution: "@autonomys/auto-utils@npm:0.3.0"
   dependencies:
     "@polkadot/api": "npm:^11.2.1"
     "@polkadot/extension-dapp": "npm:^0.47.5"
     fs: "npm:^0.0.1-security"
-  checksum: 10c0/6326dcf30e6ceb617ced6cfcc11c6635ac35b039113ee4bcf3069ad770412d2e6098c41f432135ca9cf68b9baa0389e79522afb1e2e5a963e80f3ad501004796
+  checksum: 10c0/ef441f66eb67c6dd248a83e31bfadae5c3f5d1fc942979aa734164e79a53fb4d5292b58733fcb4469f8df47afa8f15055c8b2c9036d4182a8b59ebdbfd1f3d92
   languageName: node
   linkType: hard
 
@@ -1837,8 +1838,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "auto-score@workspace:."
   dependencies:
-    "@autonomys/auto-id": "npm:^0.2.0"
-    "@autonomys/auto-utils": "npm:^0.2.0"
+    "@autonomys/auto-id": "npm:^0.3.0"
+    "@autonomys/auto-utils": "npm:^0.3.0"
     "@heroicons/react": "npm:^2.1.1"
     "@peculiar/webcrypto": "npm:^1.5.0"
     "@polkadot/api": "npm:^12.3.1"
@@ -4506,6 +4507,13 @@ __metadata:
     fetch-blob: "npm:^3.1.4"
     formdata-polyfill: "npm:^4.0.10"
   checksum: 10c0/f3d5e56190562221398c9f5750198b34cf6113aa304e34ee97c94fd300ec578b25b2c2906edba922050fce983338fde0d5d34fcb0fc3336ade5bd0e429ad7538
+  languageName: node
+  linkType: hard
+
+"node-forge@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "node-forge@npm:1.3.1"
+  checksum: 10c0/e882819b251a4321f9fc1d67c85d1501d3004b4ee889af822fd07f64de3d1a8e272ff00b689570af0465d65d6bf5074df9c76e900e0aff23e60b847f2a46fbe8
   languageName: node
   linkType: hard
 
