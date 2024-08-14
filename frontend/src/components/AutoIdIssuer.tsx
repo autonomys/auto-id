@@ -14,6 +14,7 @@ import blake2b from "blake2b";
 import { RegisterAutoIdResponseBody } from "../app/api/auto-id/route";
 import { addLocalAutoID } from "../services/autoid";
 import { redirect } from "next/navigation";
+import { getEnv } from "../utils/getEnv";
 
 export interface AutoIdIssuerProps {
   autoIdDigest: string;
@@ -81,7 +82,7 @@ export default function AutoIdIssuer({
     setIssuing(true);
     setIssuingError(null);
 
-    const response = await fetch("http://localhost:3000/api/auto-id", {
+    const response = await fetch(`${getEnv("API_ENDPOINT")}/auto-id`, {
       method: "POST",
       body: JSON.stringify({ certificatePem: certificate }),
       headers: {
