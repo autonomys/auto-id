@@ -12,9 +12,8 @@ import { InputWithCopyButton } from "./InputWithCopyButton";
 import { HexPrivateKey } from "../types/keyring";
 import blake2b from "blake2b";
 import { RegisterAutoIdResponseBody } from "../app/api/auto-id/route";
-import { addLocalAutoID } from "../services/autoid";
-import { redirect } from "next/navigation";
-import { getEnv } from "../utils/getEnv";
+import { addLocalAutoID, getDomainApi } from "../services/autoid";
+import toast from "react-hot-toast";
 
 export interface AutoIdIssuerProps {
   autoIdDigest: string;
@@ -96,18 +95,51 @@ export default function AutoIdIssuer({
     const data: RegisterAutoIdResponseBody = await response.json();
 
     if (data.status === "success") {
-      addLocalAutoID({
-        provider,
-        uuid,
-        autoIdDigest,
-        autoId,
-        certificatePem: certificate,
-      });
-      window.location.assign("/auto-id");
-    } else {
-      setIssuingError(data);
+      const api = await getDomainApi();
+
+      await api.rpc.author.submitAndWatchExtrinsic(
+        data.signedExtrinsic,
+        async (result) => {
+          if (!result.isInBlock) return;
+          const { extrinsics } = await api.derive.chain.getBlock(
+            result.asInBlock
+          );
+
+          const extrinsic = extrinsics.find(
+            (ext) => ext.extrinsic.hash.toHex() === data.hash
+          );
+
+          if (!extrinsic) {
+            setIssuingError({
+              status: "unknownError",
+              message: "Extrinsic not found",
+            });
+            return;
+          } else if (extrinsic.dispatchError) {
+            const { index, error } = extrinsic.dispatchError.asModule;
+            const { name } = api.registry.findMetaError({
+              index,
+              error,
+            });
+            setIssuingError({
+              status: "error",
+              errorName: name,
+            });
+            return;
+          } else {
+            addLocalAutoID({
+              autoId: autoId,
+              provider,
+              certificatePem: certificate,
+              uuid,
+              autoIdDigest,
+            });
+            toast.success("Auto-ID registered successfully");
+            window.location.assign("/auto-id");
+          }
+        }
+      );
     }
-    setIssuing(false);
   }, [certificate, autoId]);
 
   const certificateHash = useMemo(() => {

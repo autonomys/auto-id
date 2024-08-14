@@ -4,7 +4,7 @@ import {
   registerAutoId,
   stripPemHeaders,
 } from "@autonomys/auto-id";
-import { ApiPromise, createConnection, Keyring } from "@autonomys/auto-utils";
+import { ApiPromise, Keyring } from "@autonomys/auto-utils";
 import { getEnv } from "../../../utils/getEnv";
 import { getDomainApi } from "../../../services/autoid";
 
@@ -13,7 +13,7 @@ type RegisterAutoIdRequestBody = {
 };
 
 export type RegisterAutoIdResponseBody =
-  | { status: "success" }
+  | { status: "success"; signedExtrinsic: string; hash: string }
   | {
       status: "error";
       errorName: string;
@@ -40,46 +40,30 @@ export async function POST(req: NextRequest) {
       throw new Error("No keyring found");
     }
 
-    return await new Promise<NextResponse<RegisterAutoIdResponseBody>>(
-      (resolve) => {
-        api
-          .tx(submitableExtrinsic)
-          .signAndSend(
-            keyring,
-            ({ status, dispatchError, isInBlock, internalError, txHash }) => {
-              if (isInBlock) {
-                if (internalError) {
-                  resolve(
-                    NextResponse.json(
-                      {
-                        status: "unknownError",
-                        message: internalError.message,
-                      },
-                      { status: 409 }
-                    )
-                  );
-                } else if (dispatchError) {
-                  const { index, error } = dispatchError.asModule;
-                  const { name } = api.registry.findMetaError({
-                    index,
-                    error,
-                  });
+    // Get current block hash (used as blockHash in transaction)
+    const blockHash = await api.rpc.chain.getBlockHash();
 
-                  resolve(
-                    NextResponse.json(
-                      {
-                        status: "error",
-                        errorName: name,
-                      },
-                      { status: 409 }
-                    )
-                  );
-                } else {
-                  resolve(NextResponse.json({ status: "success", txHash }));
-                }
-              }
-            }
-          );
+    // Get keyring nonce
+    const { nonce } = (
+      await api.query.system.account(keyring.address)
+    ).toJSON() as { nonce: number };
+
+    return await new Promise<NextResponse<RegisterAutoIdResponseBody>>(
+      async (resolve) => {
+        const signedExtrinsic = await api
+          .tx(submitableExtrinsic)
+          .signAsync(keyring, {
+            nonce,
+            blockHash,
+          });
+
+        return resolve(
+          NextResponse.json({
+            status: "success",
+            signedExtrinsic: signedExtrinsic.toHex(),
+            hash: signedExtrinsic.hash.toHex(),
+          })
+        );
       }
     ).finally(() => {
       api?.disconnect();
