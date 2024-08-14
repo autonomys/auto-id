@@ -34,7 +34,7 @@ export const AutoIdCard = ({
   }, [autoId]);
 
   const shortenAutoId = useMemo(
-    () => middleShortenString(autoId, 20),
+    () => middleShortenString(autoId, 12),
     [autoId]
   );
 
@@ -54,30 +54,40 @@ export const AutoIdCard = ({
       .slice(0, 8);
   }, [certificatePem]);
 
-  return (
-    <div className="flex flex-row border border-black rounded p-4 md:w-[60%] w-9/10 items-center justify-around gap-4 bg-slate-50 px-5">
-      <img
-        src={getProviderImageUrl(provider)}
-        className="h-[80px] aspect-square"
+  const InputFileWithButtonsComp = useMemo(
+    () => (
+      <InputFileWithButtons
+        placeholder="Fetching certificate..."
+        name={`x509 certificate (${certificateHash})`}
+        value={pemCertificate}
+        downloadFilename={`cert-${certificateHash}.pem`}
+        copyMessage={"Certificate in PEM format copied to clipboard"}
       />
-      <div className="flex flex-row gap-2 w-fit-content items-center">
-        <div className="text-2xl font-medium">{shortenAutoId}</div>
-        <div>
-          <Square2StackIcon
-            onClick={onClick}
-            className="size-6 hover:cursor-pointer"
-          />
+    ),
+    [certificateHash, pemCertificate]
+  );
+
+  return (
+    <div className="flex flex-col border border-black rounded p-4 md:w-[60%] w-[80%] bg-slate-50 items-center gap-4">
+      <div className="flex flex-row items-center justify-around gap-4 w-full">
+        <img
+          src={getProviderImageUrl(provider)}
+          className="h-[80px] max-w-[33%] aspect-square"
+        />
+        <div className="flex flex-row gap-2 w-fit-content items-center">
+          <div className="text-lg md:text-2xl font-medium">{shortenAutoId}</div>
+          <div>
+            <Square2StackIcon
+              onClick={onClick}
+              className="size-6 hover:cursor-pointer"
+            />
+          </div>
         </div>
+        <span className="w-1/3 hidden md:block">
+          {InputFileWithButtonsComp}
+        </span>
       </div>
-      <span className="w-1/3">
-        <InputFileWithButtons
-          placeholder="Fetching certificate..."
-          name={`x509 certificate (${certificateHash})`}
-          value={pemCertificate}
-          downloadFilename={`cert-${certificateHash}.pem`}
-          copyMessage={pemCertificate ?? ""}
-        ></InputFileWithButtons>
-      </span>
+      <span className="w-full md:hidden block">{InputFileWithButtonsComp}</span>
     </div>
   );
 };

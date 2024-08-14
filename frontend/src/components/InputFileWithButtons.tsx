@@ -44,7 +44,7 @@ export const InputFileWithButtons = ({
     >
       {value ? (
         <>
-          <span className="overflow-hidden text-ellipsis text-nowrap">
+          <span className="overflow-hidden text-ellipsis text-nowrap max-w-[50%] md:max-w-[66%]">
             {name}
           </span>
           <a download={downloadFilename || name} href={url} target="_blank">
