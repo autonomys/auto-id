@@ -82,13 +82,16 @@ export default function AutoIdIssuer({
     setIssuing(true);
     setIssuingError(null);
 
-    const response = await fetch(`${getEnv("API_ENDPOINT")}/auto-id`, {
-      method: "POST",
-      body: JSON.stringify({ certificatePem: certificate }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_ENDPOINT}/auto-id`,
+      {
+        method: "POST",
+        body: JSON.stringify({ certificatePem: certificate }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     const data: RegisterAutoIdResponseBody = await response.json();
 
