@@ -16,13 +16,13 @@ import { addLocalAutoID } from "../services/autoid";
 import { redirect } from "next/navigation";
 
 export interface AutoIdIssuerProps {
-  autoId: string;
+  autoIdDigest: string;
   provider: string;
   uuid: string;
 }
 
 export default function AutoIdIssuer({
-  autoId,
+  autoIdDigest,
   provider,
   uuid,
 }: AutoIdIssuerProps) {
@@ -61,7 +61,7 @@ export default function AutoIdIssuer({
       ["verify"]
     );
 
-    createAndSignCSR(autoId, keypair).then((csr) => {
+    createAndSignCSR(autoIdDigest, keypair).then((csr) => {
       issueCertificate(csr, {
         keyPair: { privateKey, publicKey: nativePubKey },
       }).then((certificate) => {
@@ -69,6 +69,11 @@ export default function AutoIdIssuer({
       });
     });
   }, [keypairPem]);
+
+  const autoId = useMemo(
+    () => blake2b(32).update(Buffer.from(autoIdDigest)).digest("hex"),
+    [autoIdDigest]
+  );
 
   const onIssueAutoId = useCallback(async () => {
     if (!certificate) return;
@@ -90,6 +95,7 @@ export default function AutoIdIssuer({
       addLocalAutoID({
         provider,
         uuid,
+        autoIdDigest,
         autoId,
         certificatePem: certificate,
       });
@@ -98,7 +104,7 @@ export default function AutoIdIssuer({
       setIssuingError(data);
     }
     setIssuing(false);
-  }, [certificate]);
+  }, [certificate, autoId]);
 
   const certificateHash = useMemo(() => {
     if (!certificate) {

@@ -1,12 +1,14 @@
 import AutoIdIssuer from "../../../components/AutoIdIssuer";
-import { generateAutoID } from "../../../services/autoid";
+import { generateAutoIDDigest } from "../../../services/autoid";
 
 export default function NewAutoId({
   searchParams: { uuid, provider },
 }: {
   searchParams: { uuid: string; provider: string };
 }) {
-  const autoId = generateAutoID(provider, uuid);
+  const autoIdDigest = generateAutoIDDigest(provider, uuid);
 
-  return <AutoIdIssuer autoId={autoId} uuid={uuid} provider={provider} />;
+  return (
+    <AutoIdIssuer autoIdDigest={autoIdDigest} uuid={uuid} provider={provider} />
+  );
 }

@@ -7,6 +7,7 @@ export type AutoIdInfo = {
   provider: string;
   certificatePem: string;
   uuid: string;
+  autoIdDigest: string;
   autoId: string;
 };
 
@@ -18,7 +19,7 @@ export const getDomainApi = () => {
   return createConnection(endpoint);
 };
 
-export function generateAutoID(provider: string, uuid: string) {
+export function generateAutoIDDigest(provider: string, uuid: string) {
   const content = getEnv("LETSID_SERVER_AUTO_ID") + provider + uuid;
   return blake2b(32).update(Buffer.from(content)).digest("hex");
 }

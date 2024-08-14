@@ -56,7 +56,10 @@ export const AutoIdCard = ({
 
   return (
     <div className="flex flex-row border border-black rounded p-4 md:w-[60%] w-9/10 items-center justify-around gap-4 bg-slate-50 px-5">
-      <img src="/github.png" className="h-[80px] aspect-square" />
+      <img
+        src={getProviderImageUrl(provider)}
+        className="h-[80px] aspect-square"
+      />
       <div className="flex flex-row gap-2 w-fit-content items-center">
         <div className="text-2xl font-medium">{shortenAutoId}</div>
         <div>
@@ -77,4 +80,17 @@ export const AutoIdCard = ({
       </span>
     </div>
   );
+};
+
+const getProviderImageUrl = (provider: string) => {
+  switch (provider) {
+    case "google":
+      return "/google.png";
+    case "discord":
+      return "/discord.png";
+    case "github":
+      return "/github.png";
+    default:
+      return "";
+  }
 };

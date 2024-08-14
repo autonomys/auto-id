@@ -8,6 +8,8 @@ async function GitHub({
 }) {
   const user = await github.getUserFromCode(code);
 
+  console.log("usepruntfr", user);
+
   redirect(
     `/auto-id/new?provider=github&uuid=${user.id}`,
     RedirectType.replace

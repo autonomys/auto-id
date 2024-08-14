@@ -1,3 +1,5 @@
+import { getEnv } from "../../utils/getEnv";
+
 export const AUTH_URL = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_AUTH_CLIENT_ID}`;
 
 interface GithubAcessTokenResponse {
@@ -14,8 +16,8 @@ export const getAccessTokenFromCode = (code: string) => {
   return fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
     body: JSON.stringify({
-      client_id: "Ov23liOBAWUeQ3txhGiA",
-      client_secret: "5df140712e2051a363f658589381032c7d719fb3",
+      client_id: getEnv("GITHUB_AUTH_CLIENT_ID"),
+      client_secret: getEnv("GITHUB_AUTH_CLIENT_SECRET"),
       code,
     }),
     headers: {
