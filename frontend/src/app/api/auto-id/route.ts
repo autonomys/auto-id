@@ -6,7 +6,7 @@ import {
 } from "@autonomys/auto-id";
 import { ApiPromise, Keyring } from "@autonomys/auto-utils";
 import { getEnv } from "../../../utils/getEnv";
-import { getDomainApi } from "../../../services/autoid";
+import { getDomainApi } from "../../../services/autoid/misc";
 
 type RegisterAutoIdRequestBody = {
   certificatePem: string;

@@ -1,5 +1,5 @@
 import AutoIdIssuer from "../../../components/AutoIdIssuer";
-import { generateAutoIDDigest } from "../../../services/autoid";
+import { generateAutoIDDigest } from "../../../services/autoid/misc";
 
 export default function NewAutoId({
   searchParams: { uuid, provider },

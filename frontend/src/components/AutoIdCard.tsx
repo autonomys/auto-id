@@ -1,7 +1,6 @@
 "use client";
 
 import { PropsWithChildren, useCallback, useMemo } from "react";
-import { AutoIdInfo } from "../services/autoid";
 import { Square2StackIcon } from "@heroicons/react/24/outline";
 import { useCopyToClipboard } from "usehooks-ts";
 import toast from "react-hot-toast";
@@ -9,6 +8,7 @@ import { middleShortenString } from "../utils/shortenString";
 import { pemToCertificate } from "@autonomys/auto-id";
 import { InputFileWithButtons } from "./InputFileWithButtons";
 import blake2b from "blake2b";
+import { AutoIdInfo } from "../services/autoid/localStorage";
 
 export const AutoIdCard = ({
   autoId,
