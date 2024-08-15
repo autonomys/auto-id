@@ -2,7 +2,7 @@ import { Keyring } from "@autonomys/auto-utils";
 import { getEnv } from "../../../../utils/getEnv";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   await import("@autonomys/auto-utils").then((m) => m.cryptoWaitReady());
 
   const keyring = new Keyring({ type: "sr25519" }).addFromUri(getEnv("SEED"));
