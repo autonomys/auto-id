@@ -13,6 +13,7 @@ import {
 } from "@autonomys/auto-id";
 import { getDomainApi } from "../../../../../services/autoid/misc";
 import blake2b from "blake2b";
+import { ZkpClaimRepository } from "../../../../../repositories/ZkpClaim";
 
 interface IssueAutoScoreRequestBody {
   metadata: Metadata;
@@ -86,9 +87,21 @@ export async function POST(req: NextRequest) {
     }
 
     const claimUUID = claim.getUID();
-    // @to-do: check uuid in db and return error if it exists
 
-    // @to-do: store claim in db
+    const zkpClaimRepository = new ZkpClaimRepository();
+
+    const isUUIDRepeated =
+      (await zkpClaimRepository.getByUUID(claimUUID)) !== null;
+
+    if (isUUIDRepeated) {
+      return NextResponse.json(
+        { error: "Claim with this UUID already exists." },
+        { status: 403 }
+      );
+    }
+
+    await zkpClaimRepository.save(claimUUID, userAutoId, signedWebZKProof);
+    const usersClaims = await zkpClaimRepository.getByAutoId(userAutoId);
 
     return NextResponse.json({
       success: true,
