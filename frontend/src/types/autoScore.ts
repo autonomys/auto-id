@@ -9,7 +9,3 @@ export const createMetadata = (name: string): Metadata => {
     name,
   };
 };
-
-export const signableMetadata = (metadata: Metadata): string => {
-  return metadata.timestamp.toString();
-};

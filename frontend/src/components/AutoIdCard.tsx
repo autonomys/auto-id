@@ -5,10 +5,8 @@ import { Square2StackIcon } from "@heroicons/react/24/outline";
 import { useCopyToClipboard } from "usehooks-ts";
 import toast from "react-hot-toast";
 import { middleShortenString } from "../utils/shortenString";
-import { pemToCertificate } from "@autonomys/auto-id";
-import { InputFileWithButtons } from "./InputFileWithButtons";
-import blake2b from "blake2b";
-import { AutoIdInfo } from "../services/autoid/localStorage";
+import { getProviderImageUrl } from '../utils/provider';
+import { AutoIdInfo } from "../services/autoid/localStorageDB";
 
 export const AutoIdCard = ({
   autoId,
@@ -28,35 +26,6 @@ export const AutoIdCard = ({
     [autoId]
   );
 
-  const pemCertificate = useMemo(() => {
-    if (!certificatePem) return null;
-    return pemToCertificate(certificatePem).toString();
-  }, [certificatePem]);
-
-  const certificateHash = useMemo(() => {
-    if (!pemCertificate) {
-      return null;
-    }
-
-    return blake2b(16)
-      .update(Buffer.from(pemCertificate))
-      .digest("hex")
-      .slice(0, 8);
-  }, [certificatePem]);
-
-  const InputFileWithButtonsComp = useMemo(
-    () => (
-      <InputFileWithButtons
-        placeholder="Fetching certificate..."
-        name={`x509 certificate (${certificateHash})`}
-        value={pemCertificate}
-        downloadFilename={`cert-${certificateHash}.pem`}
-        copyMessage={"Certificate in PEM format copied to clipboard"}
-      />
-    ),
-    [certificateHash, pemCertificate]
-  );
-
   return (
     <div className="flex flex-col border border-black rounded p-4 md:w-[60%] w-[80%] bg-slate-50 items-center gap-4">
       <div className="flex flex-row items-center justify-around gap-4 w-full">
@@ -73,24 +42,13 @@ export const AutoIdCard = ({
             />
           </div>
         </div>
-        <span className="w-1/3 hidden md:block">
-          {InputFileWithButtonsComp}
-        </span>
+        <a
+          href={`${window.location.pathname}/${autoId}`}
+          className={`text-white bg-primary py-1 px-4 rounded-md text-xl hover:opacity-80 hover:scale-101 flex items-center gap-1 w-content`}
+        >
+          Manage
+        </a>
       </div>
-      <span className="w-full md:hidden block">{InputFileWithButtonsComp}</span>
     </div>
   );
-};
-
-const getProviderImageUrl = (provider: string) => {
-  switch (provider) {
-    case "google":
-      return "/google.png";
-    case "discord":
-      return "/discord.png";
-    case "github":
-      return "/github.png";
-    default:
-      return "";
-  }
 };

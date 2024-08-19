@@ -2,7 +2,7 @@ import { ZkpClaimJSON } from "@autonomys/auto-id";
 import { postgres } from "../services/db";
 import { QueryResult } from "pg";
 
-interface ZkpClaimTableSchema {
+export interface ZkpClaimTableSchema {
   uuid: string;
   autoId: string;
   claim: ZkpClaimJSON;
@@ -17,14 +17,14 @@ export class ZkpClaimRepository {
     claim: ZkpClaimJSON
   ): Promise<QueryResult<ZkpClaimTableSchema>> {
     return postgres.query<ZkpClaimTableSchema>({
-      text: "`INSERT INTO zkp_claims (uuid, autoId, claim) VALUES ($1, $2, $3)`",
+      text: "INSERT INTO zkp_claims (uuid, auto_id, claim) VALUES ($1, $2, $3)",
       values: [uuid, autoId, claim],
     });
   }
 
   async getByUUID(uuid: string): Promise<ZkpClaimTableSchema | null> {
     const result = await postgres.query<ZkpClaimTableSchema>({
-      text: "`SELECT * FROM zkp_claims WHERE uuid = $1`",
+      text: "SELECT * FROM zkp_claims WHERE uuid = $1",
       values: [uuid],
     });
 
@@ -33,7 +33,7 @@ export class ZkpClaimRepository {
 
   async getByAutoId(autoId: string): Promise<ZkpClaimTableSchema[]> {
     const result = await postgres.query<ZkpClaimTableSchema>({
-      text: "`SELECT * FROM zkp_claims WHERE autoId = $1`",
+      text: "SELECT * FROM zkp_claims WHERE auto_id = $1",
       values: [autoId],
     });
 

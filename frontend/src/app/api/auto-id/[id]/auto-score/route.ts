@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Metadata, signableMetadata } from "../../../../../types/autoScore";
+import { Metadata } from "../../../../../types/autoScore";
 import { getEnv } from "../../../../../utils/getEnv";
 import {
   Keyring,
@@ -11,18 +11,28 @@ import {
   constructZkpClaim,
   ZkpClaimJSON,
 } from "@autonomys/auto-id";
+import {
+  autoScoreSignatureChallenge,
+  metadataSignatureChallenge,
+  userSignatureChallenge,
+} from "../../../../../services/autoid/challenges";
 import { getDomainApi } from "../../../../../services/autoid/misc";
-import blake2b from "blake2b";
 import { ZkpClaimRepository } from "../../../../../repositories/ZkpClaim";
+import {
+  SignableAutoScoreClaim,
+  SignedAutoScore,
+} from "../../../../../types/autoId";
+import { HttpResponse } from "../../../../../types/httpResponse";
 
-interface IssueAutoScoreRequestBody {
+export interface IssueAutoScoreRequestBody {
   metadata: Metadata;
   signedTimestamp: string;
   userAutoId: string;
   userSignature: string;
   webZKPserviceId: string;
-  signedWebZKProof: ZkpClaimJSON;
+  signedWebZKProof: Omit<ZkpClaimJSON, "serviceId">;
 }
+export type IssueAutoScoreResponseBody = HttpResponse<SignedAutoScore>;
 
 const FIVE_MINUTES = 5 * 60 * 1000;
 
@@ -39,31 +49,29 @@ export async function POST(req: NextRequest) {
 
     const keyring = new Keyring({ type: "sr25519" }).addFromUri(getEnv("SEED"));
 
-    // @to-do: Uncomment this after testing
-
     if (Date.now() - metadata.timestamp > FIVE_MINUTES) {
-      return NextResponse.json(
-        { error: "Timestamp is too old" },
+      return NextResponse.json<IssueAutoScoreResponseBody>(
+        { error: "Timestamp is too old", success: false },
         { status: 403 }
       );
     }
 
+    /// Check if the timestamp is signed correctly
     const isMetadataSignedCorrectly = signatureVerify(
-      new TextEncoder().encode(signableMetadata(metadata)),
+      metadataSignatureChallenge(metadata),
       Buffer.from(signedTimestamp, "hex"),
       keyring.publicKey
     ).isValid;
     if (!isMetadataSignedCorrectly) {
-      return NextResponse.json(
-        { error: "Metadata is not signed correctly." },
+      return NextResponse.json<IssueAutoScoreResponseBody>(
+        { error: "Metadata is not signed correctly.", success: false },
         { status: 403 }
       );
     }
 
+    /// Check if the user signature is correct
     const api = await getDomainApi();
-    const userSignatureDigest = blake2b(32).digest(
-      Buffer.from(signedTimestamp, "hex")
-    );
+    const userSignatureDigest = userSignatureChallenge(signedTimestamp);
     const userSignatureBuffer = Buffer.from(userSignature, "hex");
 
     const isUserSignatureCorrect = await authenticateAutoIdUser(
@@ -72,44 +80,84 @@ export async function POST(req: NextRequest) {
       userSignatureDigest,
       userSignatureBuffer
     );
-
     if (!isUserSignatureCorrect) {
-      return NextResponse.json(
-        { error: "User signature challenge failed." },
+      return NextResponse.json<IssueAutoScoreResponseBody>(
+        { error: "User signature challenge failed.", success: false },
         { status: 403 }
       );
     }
 
-    const claim = constructZkpClaim(signedWebZKProof);
+    /// Check if the ZKP is correct
+    const webZKPProof = {
+      ...signedWebZKProof,
+      serviceId: getEnv("LETSID_SERVER_AUTO_ID"),
+    };
+    const claim = constructZkpClaim(webZKPProof);
     const isZKPValid = await claim.verify(api);
     if (!isZKPValid) {
-      return NextResponse.json({ error: "ZKP is not valid." }, { status: 403 });
+      return NextResponse.json<IssueAutoScoreResponseBody>(
+        { error: "ZKP is not valid.", success: false },
+        { status: 403 }
+      );
     }
 
+    /// @todo: Remove this check as shoule be occuring in the claim verification
+    ///  once the domain supports ZKP claims
     const claimUUID = claim.getUID();
-
     const zkpClaimRepository = new ZkpClaimRepository();
 
     const isUUIDRepeated =
       (await zkpClaimRepository.getByUUID(claimUUID)) !== null;
 
     if (isUUIDRepeated) {
-      return NextResponse.json(
-        { error: "Claim with this UUID already exists." },
+      return NextResponse.json<IssueAutoScoreResponseBody>(
+        { error: "Claim with this UUID already exists.", success: false },
         { status: 403 }
       );
     }
 
-    await zkpClaimRepository.save(claimUUID, userAutoId, signedWebZKProof);
-    const usersClaims = await zkpClaimRepository.getByAutoId(userAutoId);
+    await zkpClaimRepository.save(claimUUID, userAutoId, webZKPProof);
+    const claims = await zkpClaimRepository.getByAutoId(userAutoId);
 
-    return NextResponse.json({
+    /// First approach to calculate the auto-score
+    const score = Math.min(100, 33 * claims.length);
+
+    /// Construct signable claims
+    const zkpClaims = claims.map((claim) => constructZkpClaim(claim.claim));
+
+    const signableClaims: SignableAutoScoreClaim[] = zkpClaims.map((claim) => ({
+      claimHash: claim.claimHash,
+      type: claim.type,
+      uuid: claim.getUID(),
+      proof: claim.proof,
+    }));
+
+    // to-do: return auto-score signed object
+    const signableAutoScoreData = {
+      score,
+      claims: signableClaims,
+      serviceId: getEnv("LETSID_SERVER_AUTO_ID"),
+    };
+    const autoScoreDigest = autoScoreSignatureChallenge({
+      score,
+      claims: signableClaims,
+      serviceId: getEnv("LETSID_SERVER_AUTO_ID"),
+    });
+    const signature = keyring.sign(autoScoreDigest);
+
+    const autoScore: SignedAutoScore = {
+      data: signableAutoScoreData,
+      signature: Buffer.from(signature).toString("hex"),
+    };
+
+    return NextResponse.json<IssueAutoScoreResponseBody>({
       success: true,
+      data: autoScore,
     });
   } catch (error) {
     console.log(error);
-    return NextResponse.json(
-      { error: "Internal server error" },
+    return NextResponse.json<IssueAutoScoreResponseBody>(
+      { error: "Internal server error", success: false },
       { status: 500 }
     );
   }

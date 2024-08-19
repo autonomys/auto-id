@@ -14,7 +14,7 @@ import blake2b from "blake2b";
 import { RegisterAutoIdResponseBody } from "../app/api/auto-id/route";
 import { getDomainApi } from "../services/autoid/misc";
 import toast from "react-hot-toast";
-import { addLocalAutoID } from "../services/autoid/localStorage";
+import { addLocalAutoID } from "../services/autoid/localStorageDB";
 
 export interface AutoIdIssuerProps {
   autoIdDigest: string;
