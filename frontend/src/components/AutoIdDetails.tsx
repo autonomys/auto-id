@@ -126,11 +126,10 @@ export const AutoIdDetails: FC<{ autoId: string }> = (({
     );
 
     const ClaimsComp = useMemo(() => claims.map(claim => {
-        return claims.map((claim) =>
-            <div className="relative w-fit-content h-fit-content">
-                <CheckBadgeIcon className="size-4 text-verify absolute right-0 bottom-0" />
-                <img src={getProviderImageByHash(claim.claimHash)} alt="Auto-ID Score" className="w-[80px] aspect-square" />
-            </div>)
+        return <div className="relative w-fit-content h-fit-content">
+            <CheckBadgeIcon className="size-4 text-verify absolute right-0 bottom-0" />
+            <img src={getProviderImageByHash(claim.claimHash)} alt="Auto-ID Score" className="w-[80px] aspect-square" />
+        </div>
     }), [claims])
 
     const handleReclaimProof = useCallback(async (proof: Proof) => {
@@ -200,7 +199,7 @@ export const AutoIdDetails: FC<{ autoId: string }> = (({
                         <span className="text-4xl text-primary font-semibold -rotate-90 ">{autoScore?.data.score}</span>
                     </div>
                 </div>
-                <div className="hidden md:block flex flex-row gap-4 justify-center">
+                <div className="hidden md:flex flex-row gap-4 justify-center">
                     {ClaimsComp}
                 </div>
             </div>
@@ -208,15 +207,15 @@ export const AutoIdDetails: FC<{ autoId: string }> = (({
                 {ClaimsComp}
             </div>
         </div>
-        <div className="flex flex-col gap-8 w-full mt-10" style={reclaimPendingClaims.length === 0 ? { display: 'none' } : {}}>
+        <div className="flex flex-col gap-8 w-full mt-10">
             <h2 className="text-2xl indent-0 text-center md:text-left md:indent-10">
                 Pending Claims
             </h2>
             <div className="flex flex-row gap-4 items-center justify-center md:justify-start">
                 {
-                    reclaimPendingClaims.map((claimHash) => <div onClick={() => onStartReclaimProtocolClaim(claimHash)} className="md:ml-10 rounded overflow-hidden hover:opacity-[0.7] cursor-pointer">
+                    reclaimPendingClaims.length > 0 ? reclaimPendingClaims.map((claimHash) => <div onClick={() => onStartReclaimProtocolClaim(claimHash)} className="md:ml-10 rounded overflow-hidden hover:opacity-[0.7] cursor-pointer">
                         <img src={getProviderImageByHash(claimHash)} alt="Auto-ID Score" className="w-[80px] aspect-square" />
-                    </div>)
+                    </div>) : <div className="text-center text-slate-400 md:indent-10">Congratulations, you reached the maximum auto-score!</div>
                 }
             </div>
         </div>
