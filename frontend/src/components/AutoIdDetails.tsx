@@ -128,7 +128,7 @@ export const AutoIdDetails: FC<{ autoId: string }> = (({
     const ClaimsComp = useMemo(() => claims.map(claim => {
         return <div className="relative w-fit-content h-fit-content">
             <CheckBadgeIcon className="size-4 text-verify absolute right-0 bottom-0" />
-            <img src={getProviderImageByHash(claim.claimHash)} alt="Auto-ID Score" className="w-[80px] aspect-square" />
+            <img src={getProviderImageByHash(claim.claimHash)} alt="Auto-ID Score" className="w-[80px] aspect-square rounded" />
         </div>
     }), [claims])
 
