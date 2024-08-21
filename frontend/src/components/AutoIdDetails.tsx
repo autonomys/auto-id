@@ -232,6 +232,8 @@ const getProviderImageByHash = (hash: string) => {
             return "/github.png";
         case SupportedClaimHashes.UberUUID:
             return "/uber.png";
+        case SupportedClaimHashes.GoogleEmail:
+            return "/google.png";
         default:
             return "/github.png";
     }
