@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
       proof: claim.proof,
     }));
 
-    // to-do: return auto-score signed object
+    // return auto-score signed object
     const signableAutoScoreData = {
       score,
       claims: signableClaims,
