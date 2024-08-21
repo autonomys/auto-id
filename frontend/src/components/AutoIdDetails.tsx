@@ -1,7 +1,7 @@
 'use client'
 
 import { FC, useCallback, useMemo, useState } from "react";
-import { getLocalAutoIDs, updateAutoScore } from "../services/autoid/localStorageDB";
+import { useLocalAutoIDs, useUpdateAutoScore } from "../services/autoid/localStorageDB";
 import { constructZkpClaim, pemToCertificate, pemToPrivateKey, reclaimSupportsClaimHash, SupportedClaimHashes, ZkpClaimType } from "@autonomys/auto-id";
 import { Square2StackIcon } from "@heroicons/react/24/outline";
 import { CheckBadgeIcon } from "@heroicons/react/24/solid";
@@ -24,14 +24,12 @@ import { IssueAutoScoreResponseBody } from "../app/api/auto-id/[id]/auto-score/r
 export const AutoIdDetails: FC<{ autoId: string }> = (({
     autoId,
 }) => {
-    const { provider, certificatePem, autoScore } = useMemo(() => {
-        const autoIdInfo = getLocalAutoIDs().find((a) => a.autoId === autoId)
-        if (!autoIdInfo) {
-            notFound();
-        }
-
-        return autoIdInfo;
-    }, [autoId]);
+    const autoID = useLocalAutoIDs().find(a => a.autoId === autoId)
+    if (!autoID) {
+        notFound()
+    }
+    const { provider, certificatePem, autoScore } = autoID
+    const updateAutoScore = useUpdateAutoScore()
 
     const [keyringPem,] = useSessionStorage<HexPrivateKey | null>("keypair", null)
 

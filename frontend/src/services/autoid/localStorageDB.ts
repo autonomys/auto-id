@@ -1,6 +1,8 @@
 import { ZkpClaimJSON } from "@autonomys/auto-id";
 import { jsonSafeParse } from "../../utils/json";
 import { SignedAutoScore } from "../../types/autoId";
+import { useLocalStorage } from "usehooks-ts";
+import { useCallback } from "react";
 
 export type AutoIdInfo = {
   provider: string;
@@ -11,48 +13,61 @@ export type AutoIdInfo = {
   autoScore?: SignedAutoScore;
 };
 
-export function getLocalAutoIDs(): AutoIdInfo[] {
-  if (typeof window === "undefined") {
-    throw new Error("localStorage is not available");
-  }
+export function useLocalAutoIDs(): AutoIdInfo[] {
+  const [autoIDs] = useLocalStorage<AutoIdInfo[]>("auto-id", []);
 
-  const serializedAutoId = localStorage.getItem("auto-id");
-
-  return serializedAutoId ? jsonSafeParse(serializedAutoId) ?? [] : [];
+  return autoIDs;
 }
 
-function setLocalAutoIDs(autoIds: AutoIdInfo[]) {
-  if (typeof window === "undefined") {
-    throw new Error("localStorage is not available");
-  }
+function useSetLocalAutoIDs() {
+  const [, setAutoIDs] = useLocalStorage<AutoIdInfo[]>("auto-id", []);
 
-  localStorage.setItem("auto-id", JSON.stringify(autoIds));
+  return useCallback(
+    (autoIds: AutoIdInfo[]) => setAutoIDs(autoIds),
+    [setAutoIDs]
+  );
 }
 
-export function addLocalAutoID(autoId: AutoIdInfo) {
-  const autoIds = getLocalAutoIDs() || [];
-  autoIds.push(autoId);
-  localStorage.setItem("auto-id", JSON.stringify(autoIds));
+export function useAddLocalAutoID() {
+  const [autoIDs, setAutoIDs] = useLocalStorage<AutoIdInfo[]>("auto-id", []);
+
+  return useCallback(
+    (autoId: AutoIdInfo) => {
+      setAutoIDs([...autoIDs, autoId]);
+    },
+    [autoIDs]
+  );
 }
 
 export function removeLocalAutoID(autoId: AutoIdInfo) {
-  const autoIds = getLocalAutoIDs() || [];
+  const autoIds = useLocalAutoIDs();
   const newAutoIds = autoIds.filter((a) => a.autoId !== autoId.autoId);
-  setLocalAutoIDs(newAutoIds);
+  const setLocalAutoIds = useSetLocalAutoIDs();
+
+  return useCallback(() => {
+    setLocalAutoIds(newAutoIds);
+  }, [newAutoIds]);
 }
 
 export function resetLocalAutoIds() {
-  if (typeof window === "undefined") {
-    throw new Error("localStorage is not available");
-  }
+  const setLocalAutoIds = useSetLocalAutoIDs();
 
-  localStorage.removeItem("auto-id");
+  return useCallback(() => {
+    setLocalAutoIds([]);
+  }, []);
 }
 
-export function updateAutoScore(autoId: string, autoScore: SignedAutoScore) {
-  const autoIds = getLocalAutoIDs() || [];
-  const newAutoIds = autoIds.map((a) =>
-    a.autoId === autoId ? { ...a, autoScore } : a
+export function useUpdateAutoScore() {
+  const autoIds = useLocalAutoIDs();
+  const setLocalAutoIds = useSetLocalAutoIDs();
+
+  return useCallback(
+    (autoId: string, autoScore: SignedAutoScore) => {
+      const newAutoIds = autoIds.map((a) =>
+        a.autoId === autoId ? { ...a, autoScore } : a
+      );
+      setLocalAutoIds(newAutoIds);
+    },
+    [autoIds]
   );
-  setLocalAutoIDs(newAutoIds);
 }

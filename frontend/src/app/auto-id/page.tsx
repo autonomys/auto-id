@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
 import { PlusIcon, } from "@heroicons/react/24/outline";
 import { AutoIdCard } from "../../components/AutoIdCard";
-import { getLocalAutoIDs } from "../../services/autoid/localStorageDB";
+import { useLocalAutoIDs } from "../../services/autoid/localStorageDB";
 
 function AutoScore() {
   const [keypair] = useSessionStorage<HexPrivateKey | null>("keypair", null);
@@ -15,7 +15,7 @@ function AutoScore() {
     redirect("/");
   }
 
-  const autoIDs = getLocalAutoIDs();
+  const autoIDs = useLocalAutoIDs();
 
   return (
     <div className="flex flex-col h-full w-full items-center mt-[200px] gap-2">

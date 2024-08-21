@@ -14,7 +14,7 @@ import blake2b from "blake2b";
 import { RegisterAutoIdResponseBody } from "../app/api/auto-id/route";
 import { getDomainApi } from "../services/autoid/misc";
 import toast from "react-hot-toast";
-import { addLocalAutoID } from "../services/autoid/localStorageDB";
+import { useAddLocalAutoID } from "../services/autoid/localStorageDB";
 
 export interface AutoIdIssuerProps {
   autoIdDigest: string;
@@ -29,6 +29,7 @@ export default function AutoIdIssuer({
 }: AutoIdIssuerProps) {
   const [certificate, setCertificate] = useState<string | null>(null);
   const [issuing, setIssuing] = useState<boolean>(false);
+  const addAutoId = useAddLocalAutoID();
 
   const [keypairPem] = useSessionStorage<HexPrivateKey | null>("keypair", null);
   const [issuingError, setIssuingError] = useState<
@@ -128,7 +129,7 @@ export default function AutoIdIssuer({
             });
             return;
           } else {
-            addLocalAutoID({
+            addAutoId({
               autoId: autoId,
               provider,
               certificatePem: certificate,
