@@ -2,11 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { Metadata } from "../../../../../types/autoScore";
 import { getEnv } from "../../../../../utils/getEnv";
 import {
-  Keyring,
-  cryptoWaitReady,
-  signatureVerify,
-} from "@autonomys/auto-utils";
-import {
   authenticateAutoIdUser,
   constructZkpClaim,
   crypto,
@@ -41,7 +36,6 @@ const FIVE_MINUTES = 5 * 60 * 1000;
 
 export async function POST(req: NextRequest) {
   try {
-    await cryptoWaitReady();
     const {
       metadata,
       signedTimestamp,
@@ -49,8 +43,6 @@ export async function POST(req: NextRequest) {
       userSignature,
       signedWebZKProof,
     }: IssueAutoScoreRequestBody = await req.json();
-
-    const keyring = new Keyring({ type: "sr25519" }).addFromUri(getEnv("SEED"));
 
     if (Date.now() - metadata.timestamp > FIVE_MINUTES) {
       return NextResponse.json<IssueAutoScoreResponseBody>(
