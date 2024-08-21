@@ -1,3 +1,4 @@
+import { verify } from "crypto";
 import type { Config } from "tailwindcss";
 
 const config: Config = {
@@ -15,6 +16,7 @@ const config: Config = {
     extend: {
       colors: {
         primary: "#929EEA",
+        verify: "#008bff",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

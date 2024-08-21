@@ -6,7 +6,7 @@ import {
 } from "@autonomys/auto-id";
 import { ApiPromise, Keyring } from "@autonomys/auto-utils";
 import { getEnv } from "../../../utils/getEnv";
-import { getDomainApi } from "../../../services/autoid";
+import { getDomainApi } from "../../../services/autoid/misc";
 
 type RegisterAutoIdRequestBody = {
   certificatePem: string;
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       await api.query.system.account(keyring.address)
     ).toJSON() as { nonce: number };
 
-    return await new Promise<NextResponse<RegisterAutoIdResponseBody>>(
+    return new Promise<NextResponse<RegisterAutoIdResponseBody>>(
       async (resolve) => {
         const signedExtrinsic = await api
           .tx(submitableExtrinsic)

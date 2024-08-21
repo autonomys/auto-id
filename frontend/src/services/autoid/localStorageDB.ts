@@ -1,7 +1,6 @@
-import blake2b from "blake2b";
-import { getEnv } from "../../utils/getEnv";
+import { ZkpClaimJSON } from "@autonomys/auto-id";
 import { jsonSafeParse } from "../../utils/json";
-import { createConnection } from "@autonomys/auto-utils";
+import { SignedAutoScore } from "../../types/autoId";
 
 export type AutoIdInfo = {
   provider: string;
@@ -9,28 +8,24 @@ export type AutoIdInfo = {
   uuid: string;
   autoIdDigest: string;
   autoId: string;
+  autoScore?: SignedAutoScore;
 };
-
-export const getDomainApi = () => {
-  const endpoint = process.env.NEXT_PUBLIC_RPC_ENDPOINT;
-  if (!endpoint) {
-    throw new Error("Missing environment variable: NEXT_PUBLIC_RPC_ENDPOINT");
-  }
-  return createConnection(endpoint);
-};
-
-export function generateAutoIDDigest(provider: string, uuid: string) {
-  const content = getEnv("LETSID_SERVER_AUTO_ID") + provider + uuid;
-  return blake2b(32).update(Buffer.from(content)).digest("hex");
-}
 
 export function getLocalAutoIDs(): AutoIdInfo[] {
+  if (typeof window === "undefined") {
+    throw new Error("localStorage is not available");
+  }
+
   const serializedAutoId = localStorage.getItem("auto-id");
 
   return serializedAutoId ? jsonSafeParse(serializedAutoId) ?? [] : [];
 }
 
 function setLocalAutoIDs(autoIds: AutoIdInfo[]) {
+  if (typeof window === "undefined") {
+    throw new Error("localStorage is not available");
+  }
+
   localStorage.setItem("auto-id", JSON.stringify(autoIds));
 }
 
@@ -47,5 +42,17 @@ export function removeLocalAutoID(autoId: AutoIdInfo) {
 }
 
 export function resetLocalAutoIds() {
+  if (typeof window === "undefined") {
+    throw new Error("localStorage is not available");
+  }
+
   localStorage.removeItem("auto-id");
+}
+
+export function updateAutoScore(autoId: string, autoScore: SignedAutoScore) {
+  const autoIds = getLocalAutoIDs() || [];
+  const newAutoIds = autoIds.map((a) =>
+    a.autoId === autoId ? { ...a, autoScore } : a
+  );
+  setLocalAutoIDs(newAutoIds);
 }

@@ -12,8 +12,9 @@ import { InputWithCopyButton } from "./InputWithCopyButton";
 import { HexPrivateKey } from "../types/keyring";
 import blake2b from "blake2b";
 import { RegisterAutoIdResponseBody } from "../app/api/auto-id/route";
-import { addLocalAutoID, getDomainApi } from "../services/autoid";
+import { getDomainApi } from "../services/autoid/misc";
 import toast from "react-hot-toast";
+import { addLocalAutoID } from "../services/autoid/localStorageDB";
 
 export interface AutoIdIssuerProps {
   autoIdDigest: string;
@@ -32,7 +33,7 @@ export default function AutoIdIssuer({
   const [keypairPem] = useSessionStorage<HexPrivateKey | null>("keypair", null);
   const [issuingError, setIssuingError] = useState<
     | (RegisterAutoIdResponseBody &
-        ({ status: "error" } | { status: "unknownError" }))
+      ({ status: "error" } | { status: "unknownError" }))
     | null
   >(null);
 

@@ -4,9 +4,9 @@ import { useSessionStorage } from "usehooks-ts";
 import { HexPrivateKey } from "../../types/keyring";
 import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
-import { PlusIcon, Square2StackIcon } from "@heroicons/react/24/outline";
-import { getLocalAutoIDs } from "../../services/autoid";
-import { AutoIdCard } from "./AutoIdCard";
+import { PlusIcon, } from "@heroicons/react/24/outline";
+import { AutoIdCard } from "../../components/AutoIdCard";
+import { getLocalAutoIDs } from "../../services/autoid/localStorageDB";
 
 function AutoScore() {
   const [keypair] = useSessionStorage<HexPrivateKey | null>("keypair", null);
