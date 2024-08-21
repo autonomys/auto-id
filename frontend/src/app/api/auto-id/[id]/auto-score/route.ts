@@ -160,7 +160,11 @@ export async function POST(req: NextRequest) {
       claims: signableClaims,
       serviceId: getEnv("LETSID_SERVER_AUTO_ID"),
     });
-    const signature = keyring.sign(autoScoreDigest);
+    const signature = await crypto.subtle.sign(
+      algorithm,
+      privateKey,
+      autoScoreDigest
+    );
 
     const autoScore: SignedAutoScore = {
       data: signableAutoScoreData,
