@@ -1,0 +1,58 @@
+{
+  "name": "auto-score",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@autonomys/auto-id": "^0.4.0",
+    "@autonomys/auto-utils": "^0.4.0",
+    "@heroicons/react": "^2.1.1",
+    "@peculiar/webcrypto": "^1.5.0",
+    "@polkadot/api": "^12.3.1",
+    "@polkadot/keyring": "^13.0.2",
+    "@polkadot/util-crypto": "^13.0.2",
+    "@reclaimprotocol/js-sdk": "^1.3.11",
+    "axios": "^1.7.3",
+    "blake2b": "^2.1.4",
+    "crypto-browserify": "^3.12.0",
+    "crypto-js": "^4.2.0",
+    "db-migrate": "^0.11.14",
+    "db-migrate-pg": "^1.5.2",
+    "discord-oauth2": "^2.12.1",
+    "next": "14.2.5",
+    "pg": "^8.12.0",
+    "qs": "^6.13.0",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-hot-toast": "^2.4.1",
+    "react-modal": "^3.16.1",
+    "react-qr-code": "^2.0.15",
+    "ts-node": "^10.9.2",
+    "usehooks-ts": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/blake2b": "^2",
+    "@types/crypto-js": "^4",
+    "@types/node": "^20",
+    "@types/pg": "^8",
+    "@types/qs": "^6",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/react-modal": "^3",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.5",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  },
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false
+  }
+}
