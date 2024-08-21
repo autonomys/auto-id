@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
     if (isUUIDRepeated) {
       return NextResponse.json<IssueAutoScoreResponseBody>(
         { error: "Claim with this UUID already exists.", success: false },
-        { status: 403 }
+        { status: 409 }
       );
     }
 
