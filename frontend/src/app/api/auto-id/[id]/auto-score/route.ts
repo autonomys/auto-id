@@ -9,6 +9,9 @@ import {
 import {
   authenticateAutoIdUser,
   constructZkpClaim,
+  crypto,
+  cryptoKeyPairFromPrivateKey,
+  pemToPrivateKey,
   ZkpClaimJSON,
 } from "@autonomys/auto-id";
 import {
@@ -57,11 +60,25 @@ export async function POST(req: NextRequest) {
     }
 
     /// Check if the timestamp is signed correctly
-    const isMetadataSignedCorrectly = signatureVerify(
-      metadataSignatureChallenge(metadata),
+    const algorithm = {
+      name: "RSASSA-PKCS1-v1_5",
+      hash: "SHA-256",
+    };
+    const privateKey = await pemToPrivateKey(
+      getEnv("LETSID_SERVER_PRIVATE_KEY"),
+      algorithm
+    );
+    const { publicKey } = await cryptoKeyPairFromPrivateKey(
+      privateKey,
+      algorithm
+    );
+
+    const isMetadataSignedCorrectly = await crypto.subtle.verify(
+      algorithm,
+      publicKey,
       Buffer.from(signedTimestamp, "hex"),
-      keyring.publicKey
-    ).isValid;
+      metadataSignatureChallenge(metadata)
+    );
     if (!isMetadataSignedCorrectly) {
       return NextResponse.json<IssueAutoScoreResponseBody>(
         { error: "Metadata is not signed correctly.", success: false },
