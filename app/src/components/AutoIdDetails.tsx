@@ -167,6 +167,8 @@ export const AutoIdDetails: FC<{ autoId: string }> = (({
         setClaimingInfo(null)
     }, [claimingInfo, autoId, signMessage])
 
+    const score = autoScore?.data.score || 0
+
     return <div className="flex flex-col border border-black rounded p-4 md:w-[60%] w-[80%] bg-slate-50 items-center gap-4">
         <div className="flex flex-row items-center justify-around gap-4 w-full">
             <img
@@ -192,9 +194,9 @@ export const AutoIdDetails: FC<{ autoId: string }> = (({
                 Auto-Score
             </h2>
             <div className="flex flex-row gap-8 items-center justify-center md:justify-start">
-                <div style={{ background: `conic-gradient(#929EEA 0% ${autoScore?.data.score}%, #929EEA40 ${autoScore?.data.score}% 100%)` }} className="flex rounded-circle w-[100px] h-[100px] justify-center items-center ml-10 rotate-90 mr-10">
+                <div style={{ background: `conic-gradient(#929EEA 0% ${score}%, #929EEA40 ${score}% 100%)` }} className="flex rounded-circle w-[100px] h-[100px] justify-center items-center ml-10 rotate-90 mr-10">
                     <div className="flex rounded-circle bg-slate-50 w-[92px] h-[92px] aspect-square justify-center items-center">
-                        <span className="text-4xl text-primary font-semibold -rotate-90 ">{autoScore?.data.score}</span>
+                        <span className="text-4xl text-primary font-semibold -rotate-90 ">{score}</span>
                     </div>
                 </div>
                 <div className="hidden md:flex flex-row gap-4 justify-center">
