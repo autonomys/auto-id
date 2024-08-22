@@ -49,23 +49,11 @@ export default function AutoIdIssuer({
 
     const privateKey = await pemToPrivateKey(keypairPem.data, algorithm);
 
-    const keypair = await cryptoKeyPairFromPrivateKey(privateKey, algorithm);
+    const keyPair = await cryptoKeyPairFromPrivateKey(privateKey, algorithm);
 
-    const pubkey = await window.crypto.subtle.exportKey(
-      "spki",
-      keypair.publicKey
-    );
-    const nativePubKey = await window.crypto.subtle.importKey(
-      "spki",
-      pubkey,
-      algorithm,
-      true,
-      ["verify"]
-    );
-
-    createAndSignCSR(autoIdDigest, keypair).then((csr) => {
+    createAndSignCSR(autoIdDigest, keyPair).then((csr) => {
       issueCertificate(csr, {
-        keyPair: { privateKey, publicKey: nativePubKey },
+        keyPair,
       }).then((certificate) => {
         setCertificate(certificate.toString("pem"));
       });
