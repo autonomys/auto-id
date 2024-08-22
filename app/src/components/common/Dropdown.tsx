@@ -52,7 +52,7 @@ export const DropdownButtons: FC<PropsWithoutRef<DropdownButtonsProps>> = ({ opt
                                 value={key}
                             >
                                 {({ selected }) => (
-                                    <span className={`block p-2 truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                                    <span className={`block p-2 truncate font-normal`}>
                                         {text}
                                     </span>
                                 )}

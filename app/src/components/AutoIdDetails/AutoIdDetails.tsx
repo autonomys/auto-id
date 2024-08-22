@@ -1,25 +1,28 @@
 'use client'
 
 import { FC, useCallback, useMemo, useState } from "react";
-import { useLocalAutoIDs, useUpdateAutoScore } from "../services/autoid/localStorageDB";
+import { useLocalAutoIDs, useUpdateAutoScore } from "../../services/autoid/localStorageDB";
 import { constructZkpClaim, pemToCertificate, pemToPrivateKey, reclaimSupportsClaimHash, SupportedClaimHashes, ZkpClaimType } from "@autonomys/auto-id";
 import { Square2StackIcon } from "@heroicons/react/24/outline";
 import { CheckBadgeIcon } from "@heroicons/react/24/solid";
 import { useCopyToClipboard, useSessionStorage } from "usehooks-ts";
-import { getProviderImageUrl } from "../utils/provider";
-import { middleShortenString } from "../utils/shortenString";
-import { InputFileWithButtons } from "./InputFileWithButtons";
+import { getProviderImageUrl } from "../../utils/provider";
+import { middleShortenString } from "../../utils/shortenString";
+import { InputFileWithButtons } from "../InputFileWithButtons";
 import blake2b from "blake2b";
 import toast from "react-hot-toast";
 import { notFound } from "next/navigation";
-import { ReclaimResponseBody } from "../app/api/auto-id/[id]/auto-score/reclaim/route";
+import { ReclaimResponseBody } from "../../app/api/auto-id/[id]/auto-score/reclaim/route";
 import { Proof } from '@reclaimprotocol/js-sdk'
 import { ReclaimQRCode } from "./ReclaimQRCode";
-import { HexPrivateKey } from "../types/keyring";
-import { userSignatureChallenge } from "../services/autoid/challenges";
-import { Metadata } from "../types/autoScore";
-import { extractFromHttpResponse } from "../types/httpResponse";
-import { IssueAutoScoreResponseBody } from "../app/api/auto-id/[id]/auto-score/route";
+import { HexPrivateKey } from "../../types/keyring";
+import { userSignatureChallenge } from "../../services/autoid/challenges";
+import { Metadata } from "../../types/autoScore";
+import { extractFromHttpResponse } from "../../types/httpResponse";
+import { IssueAutoScoreResponseBody } from "../../app/api/auto-id/[id]/auto-score/route";
+import { DropdownButtons } from "../common/Dropdown";
+import { getProviderImageByHash } from "./utils";
+import { ClaimSelectorModal } from "./ClaimSelectorModal";
 
 export const AutoIdDetails: FC<{ autoId: string }> = (({
     autoId,
@@ -30,9 +33,9 @@ export const AutoIdDetails: FC<{ autoId: string }> = (({
     }
     const { provider, certificatePem, autoScore } = autoID
     const updateAutoScore = useUpdateAutoScore()
+    const [showClaimSelector, setShowClaimSelector] = useState(false)
 
     const [keyringPem,] = useSessionStorage<HexPrivateKey | null>("keypair", null)
-
     const signMessage = useCallback(async (message: Buffer) => {
         if (!keyringPem) {
             throw new Error('No keyring found')
@@ -79,6 +82,7 @@ export const AutoIdDetails: FC<{ autoId: string }> = (({
         }).then(res => res.json() as Promise<ReclaimResponseBody>)
 
         setClaimingInfo({ claiming, auth })
+        setShowClaimSelector(false)
     }, [])
 
     const shortenAutoId = useMemo(
@@ -110,14 +114,45 @@ export const AutoIdDetails: FC<{ autoId: string }> = (({
         return !claims.some(claim => claim.claimHash === hash)
     }), []).filter(hash => reclaimSupportsClaimHash(hash))
 
-    const InputFileWithButtonsComp = useMemo(
+    const ActionsButton = useMemo(
         () => (
-            <InputFileWithButtons
-                placeholder="Fetching certificate..."
-                name={`x509 certificate (${certificateHash})`}
-                value={pemCertificate}
-                downloadFilename={`cert-${certificateHash}.pem`}
-                copyMessage={"Certificate in PEM format copied to clipboard"}
+            <DropdownButtons
+                buttonText="Actions"
+                options={[
+                    ...(reclaimPendingClaims.length > 0 ? [{
+                        text: "Reclaim Auto-Score",
+                        key: "reclaim",
+                        onSelected: () => setShowClaimSelector(true)
+                    }] : []),
+                    {
+                        text: "Download Auto-ID certificate",
+                        key: "download-certificate",
+                        onSelected: () => {
+                            if (!pemCertificate) {
+                                toast.error("No certificate found");
+                                return;
+                            }
+                            const element = document.createElement("a");
+                            const file = new Blob([pemCertificate], { type: 'text/plain' });
+                            element.href = URL.createObjectURL(file);
+                            element.download = `auto-id-${certificateHash}.pem`;
+                            document.body.appendChild(element);
+                            element.click();
+                        }
+                    },
+                    {
+                        text: "Copy Auto-ID certificate",
+                        key: "copy-certificate",
+                        onSelected: () => {
+                            if (!pemCertificate) {
+                                toast.error("No certificate found");
+                                return;
+                            }
+                            updateClipboard(pemCertificate);
+                            toast.success("Certificate copied to clipboard");
+                        }
+                    }
+                ]}
             />
         ),
         [certificateHash, pemCertificate]
@@ -169,6 +204,16 @@ export const AutoIdDetails: FC<{ autoId: string }> = (({
 
     const score = autoScore?.data.score || 0
 
+
+    const modal = useMemo(() => {
+        if (claimingInfo && claimingInfo.claiming.requestUrl) {
+            return <ReclaimQRCode onSuccess={handleReclaimProof} onDismiss={() => setClaimingInfo(null)} {...claimingInfo.claiming} />
+        }
+        if (showClaimSelector) {
+            return <ClaimSelectorModal onClaimSelected={onStartReclaimProtocolClaim} onClose={() => setShowClaimSelector(false)} supportedClaims={reclaimPendingClaims} />
+        }
+    }, [claimingInfo, showClaimSelector, handleReclaimProof, onStartReclaimProtocolClaim, reclaimPendingClaims])
+
     return <div className="flex flex-col border border-black rounded p-4 md:w-[60%] w-[80%] bg-slate-50 items-center gap-4">
         <div className="flex flex-row items-center justify-around gap-4 w-full">
             <img
@@ -185,10 +230,10 @@ export const AutoIdDetails: FC<{ autoId: string }> = (({
                 </div>
             </div>
             <span className="w-1/3 hidden md:block">
-                {InputFileWithButtonsComp}
+                {ActionsButton}
             </span>
         </div>
-        <span className="w-full md:hidden block">{InputFileWithButtonsComp}</span>
+        <span className="w-full md:hidden block">{ActionsButton}</span>
         <div className="flex flex-col gap-8 w-full mt-10" style={claims.length === 0 ? { display: 'none' } : {}}>
             <h2 className="text-2xl text-center md:indent-10 md:text-left">
                 Auto-Score
@@ -207,34 +252,8 @@ export const AutoIdDetails: FC<{ autoId: string }> = (({
                 {ClaimsComp}
             </div>
         </div>
-        <div className="flex flex-col gap-8 w-full mt-10">
-            <h2 className="text-2xl indent-0 text-center md:text-left md:indent-10">
-                Pending Claims
-            </h2>
-            <div className="flex flex-row gap-4 items-center justify-center md:justify-start">
-                {
-                    reclaimPendingClaims.length > 0 ? reclaimPendingClaims.map((claimHash) => <div onClick={() => onStartReclaimProtocolClaim(claimHash)} className="md:ml-10 rounded overflow-hidden hover:opacity-[0.7] cursor-pointer">
-                        <img src={getProviderImageByHash(claimHash)} alt="Auto-ID Score" className="w-[80px] aspect-square" />
-                    </div>) : <div className="text-center text-slate-400 md:indent-10">Congratulations, you reached the maximum auto-score!</div>
-                }
-            </div>
-        </div>
-        {
-            claimingInfo && claimingInfo.claiming.requestUrl && <ReclaimQRCode onSuccess={handleReclaimProof} onDismiss={() => setClaimingInfo(null)} {...claimingInfo.claiming} />
-        }
+        {modal}
     </div>
 })
 
 
-const getProviderImageByHash = (hash: string) => {
-    switch (hash) {
-        case SupportedClaimHashes.GithubUsername:
-            return "/github.png";
-        case SupportedClaimHashes.UberUUID:
-            return "/uber.png";
-        case SupportedClaimHashes.GoogleEmail:
-            return "/google.png";
-        default:
-            return "/github.png";
-    }
-}

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { AutoIdDetails } from '../../../components/AutoIdDetails';
+import { AutoIdDetails } from '../../../components/AutoIdDetails/AutoIdDetails';
 
 
 export default function AutoId({ params }: { params: { id: string } }) {
