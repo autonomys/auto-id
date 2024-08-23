@@ -1,7 +1,6 @@
 import { AutoIdDetails } from '../../../components/AutoIdDetails/AutoIdDetails';
 import { DiscordAction, discordAuthUrl } from '../../../services/auth/discord';
 
-
 export default function AutoId({ params }: { params: { id: string } }) {
     const { id } = params;
 

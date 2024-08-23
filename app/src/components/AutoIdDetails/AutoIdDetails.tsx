@@ -8,10 +8,8 @@ import { CheckBadgeIcon } from "@heroicons/react/24/solid";
 import { useCopyToClipboard, useSessionStorage } from "usehooks-ts";
 import { getProviderImageUrl } from "../../utils/provider";
 import { middleShortenString } from "../../utils/shortenString";
-import { InputFileWithButtons } from "../InputFileWithButtons";
 import blake2b from "blake2b";
 import toast from "react-hot-toast";
-import { notFound } from "next/navigation";
 import { ReclaimResponseBody } from "../../app/api/auto-id/[id]/auto-score/reclaim/route";
 import { Proof } from '@reclaimprotocol/js-sdk'
 import { ReclaimQRCode } from "./ReclaimQRCode";
@@ -23,15 +21,13 @@ import { IssueAutoScoreResponseBody } from "../../app/api/auto-id/[id]/auto-scor
 import { DropdownButtons } from "../common/Dropdown";
 import { getProviderImageByHash } from "./utils";
 import { ClaimSelectorModal } from "./ClaimSelectorModal";
+import dynamic from "next/dynamic";
 
-export const AutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = (({
+const InternalAutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = (({
     autoId,
     linkToDiscordUrl
 }) => {
-    const autoID = useLocalAutoIDs().find(a => a.autoId === autoId)
-    if (!autoID) {
-        return
-    }
+    const autoID = useLocalAutoIDs().find(a => a.autoId === autoId)!
 
     const { provider, certificatePem, autoScore, linkedApps } = autoID
     const updateAutoScore = useUpdateAutoScore()
@@ -283,3 +279,7 @@ export const AutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = (
 })
 
 
+
+export const AutoIdDetails = dynamic(() => Promise.resolve(InternalAutoIdDetails), {
+    ssr: false
+})
