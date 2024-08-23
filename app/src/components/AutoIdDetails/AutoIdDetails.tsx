@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { useLocalAutoIDs, useUpdateAutoScore } from "../../services/autoid/localStorageDB";
 import { constructZkpClaim, pemToCertificate, pemToPrivateKey, reclaimSupportsClaimHash, SupportedClaimHashes, ZkpClaimType } from "@autonomys/auto-id";
 import { Square2StackIcon } from "@heroicons/react/24/outline";
