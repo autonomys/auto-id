@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, useCallback, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useMemo, useState } from "react";
 import { useLocalAutoIDs, useUpdateAutoScore } from "../../services/autoid/localStorageDB";
 import { constructZkpClaim, pemToCertificate, pemToPrivateKey, reclaimSupportsClaimHash, SupportedClaimHashes, ZkpClaimType } from "@autonomys/auto-id";
 import { Square2StackIcon } from "@heroicons/react/24/outline";
@@ -268,7 +268,7 @@ export const AutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = (
                 </div>
             </div>
             {
-                linkedApps && <div className="flex flex-col gap-8 w-full mt-10">
+                linkedApps && <div className="flex flex-col gap-8 w-full mt-10" style={claims.length === 0 ? { display: 'none' } : {}}>
                     <h2 className="text-2xl text-center md:indent-10 md:text-left">
                         Apps
                     </h2>
