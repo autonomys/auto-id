@@ -54,6 +54,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Verify the user is not already linked
+    const botAccessToken = getEnv("DISCORD_BOT_TOKEN");
+
     // Get user from provider and accessToken and link the user to the autoId
     const user = await discord.getUserFromAccessToken(accessToken);
 
@@ -64,14 +67,15 @@ export async function POST(req: NextRequest) {
       ],
     });
 
-    await client.login(getEnv("DISCORD_BOT_TOKEN"));
+    await client.login(botAccessToken);
 
     const guildId = getEnv("DISCORD_GUILD_ID");
     const guild = await memberEnsuredGuild(
       client,
+      botAccessToken,
+      accessToken,
       guildId,
-      user.id,
-      accessToken
+      user.id
     );
 
     const role = guild.roles.cache.find(
@@ -100,17 +104,18 @@ export async function POST(req: NextRequest) {
 
 async function memberEnsuredGuild(
   client: Client,
+  botAccessToken: string,
+  accessToken: string,
   guildId: string,
-  userId: string,
-  accessToken: string
+  userId: string
 ): Promise<Guild> {
   const guild = await client.guilds.fetch(guildId);
-  const member = await guild.members.fetch(userId);
+  const member = guild.members.cache.find((e) => e.id === userId);
   if (member) {
     return guild;
   }
 
-  await addMemberToGuild(accessToken, guildId, userId);
+  await addMemberToGuild(botAccessToken, accessToken, guildId, userId);
 
   return client.guilds.fetch(guildId);
 }

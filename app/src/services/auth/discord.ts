@@ -87,19 +87,21 @@ export const getUserFromCode = (accessToken: string) => {
 };
 
 export const addMemberToGuild = (
-  accessToken: string,
+  botAccessToken: string,
+  userAccessToken: string,
   guildId: string,
   userId: string
 ) => {
-  return fetch(`https://discord.com/guilds/${guildId}/members/${userId}`, {
+  return fetch(`https://discord.com/api/guilds/${guildId}/members/${userId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bot ${getEnv("DISCORD_BOT_TOKEN")}`,
+      Authorization: `Bot ${botAccessToken}`,
     },
     body: JSON.stringify({
-      access_token: accessToken,
-      roles: [getEnv("DISCORD_MEMBER_ROLE_ID")],
+      access_token: userAccessToken,
     }),
+  }).then(async (e) => {
+    console.log(await e.text());
   });
 };
