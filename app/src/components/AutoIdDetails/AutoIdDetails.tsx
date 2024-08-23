@@ -30,7 +30,7 @@ export const AutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = (
 }) => {
     const autoID = useLocalAutoIDs().find(a => a.autoId === autoId)
     if (!autoID) {
-        return
+        notFound()
     }
 
     const { provider, certificatePem, autoScore, linkedApps } = autoID
