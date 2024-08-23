@@ -244,7 +244,7 @@ export const AutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = (
             </span>
         </div>
         <span className="w-full md:hidden block">{ActionsButton}</span>
-        <div className="flex flex-col w-full h-full lg:flex-row">
+        <div className="flex flex-col w-full h-full md:flex-row">
             <div className="flex flex-col gap-8 w-full mt-10" style={claims.length === 0 ? { display: 'none' } : {}}>
                 <h2 className="text-2xl text-center md:indent-10 md:text-left">
                     Auto-Score
