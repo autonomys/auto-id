@@ -29,13 +29,9 @@ export const AutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = (
     linkToDiscordUrl
 }) => {
     const autoID = useLocalAutoIDs().find(a => a.autoId === autoId)
-    if (!autoID) return
-
-    useEffect(() => {
-        if (!autoID) {
-            notFound()
-        }
-    }, [autoID])
+    if (!autoID) {
+        notFound()
+    }
 
     const { provider, certificatePem, autoScore, linkedApps } = autoID
     const updateAutoScore = useUpdateAutoScore()
