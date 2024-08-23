@@ -38,27 +38,20 @@ export const DropdownButtons: FC<PropsWithoutRef<DropdownButtonsProps>> = ({ opt
                         </span>
                     </div>
                 </ListboxButton>
-                <Transition
-                    as={Fragment}
-                    leave='transition ease-in duration-100'
-                    leaveFrom='opacity-100'
-                    leaveTo='opacity-0'
-                >
-                    <ListboxOptions className='absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
-                        {options.map(({ key, text }, personIdx) => (
-                            <ListboxOption
-                                key={personIdx}
-                                value={key}
-                            >
-                                {({ selected }) => (
-                                    <span className={`block p-2 truncate font-normal`}>
-                                        {text}
-                                    </span>
-                                )}
-                            </ListboxOption>
-                        ))}
-                    </ListboxOptions>
-                </Transition>
+                <ListboxOptions className='absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
+                    {options.map(({ key, text }) => (
+                        <ListboxOption
+                            key={key}
+                            value={key}
+                        >
+                            {({ selected }) => (
+                                <span className={`block p-2 truncate font-normal`}>
+                                    {text}
+                                </span>
+                            )}
+                        </ListboxOption>
+                    ))}
+                </ListboxOptions>
             </div>
         </Listbox>
     )
