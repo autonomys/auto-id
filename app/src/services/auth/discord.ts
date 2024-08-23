@@ -2,11 +2,34 @@ import qs from "qs";
 import axios from "axios";
 import { getEnv } from "../../utils/getEnv";
 
-export const AUTH_URL = `https://discord.com/oauth2/authorize?client_id=${getEnv(
-  "DISCORD_AUTH_CLIENT_ID"
-)}&response_type=code&redirect_uri=${encodeURIComponent(
-  getEnv("DISCORD_AUTH_REDIRECT_URI")
-)}&scope=identify+email`;
+export type DiscordState =
+  | {
+      action: DiscordAction.OAuth;
+    }
+  | {
+      action: DiscordAction.AutoIdVerification;
+      autoId: string;
+    };
+
+export const encodeDiscordState = (state: DiscordState) => {
+  return Buffer.from(JSON.stringify(state)).toString("base64");
+};
+
+export const decodeDiscordState = (state: string) => {
+  return JSON.parse(Buffer.from(state, "base64").toString()) as DiscordState;
+};
+
+export enum DiscordAction {
+  OAuth = "oauth",
+  AutoIdVerification = "auto-id",
+}
+
+export const discordAuthUrl = (state: DiscordState, scope = "identify+email") =>
+  `https://discord.com/oauth2/authorize?client_id=${getEnv(
+    "DISCORD_AUTH_CLIENT_ID"
+  )}&response_type=code&redirect_uri=${encodeURIComponent(
+    getEnv("DISCORD_AUTH_REDIRECT_URI")
+  )}&scope=${scope}&state=${encodeDiscordState(state)}`;
 
 interface DiscordAcessTokenResponse {
   access_token: string;
@@ -46,8 +69,6 @@ export const getAccessTokenFromCode = (code: string) => {
 };
 
 export const getUserFromAccessToken = (accessToken: string) => {
-  console.log("accessToken", accessToken);
-
   return fetch("https://discord.com/api/users/@me", {
     method: "GET",
     headers: {
@@ -56,20 +77,29 @@ export const getUserFromAccessToken = (accessToken: string) => {
       "Access-Control-Allow-Origin": "*",
       Authorization: `Bearer ${accessToken}`,
     },
-  })
-    .then((response) => {
-      console.log(response);
-      return response;
-    })
-    .then((response) => response.json() as Promise<DiscordUser>)
-    .then((user) => {
-      console.log(user);
-      return user;
-    });
+  }).then((response) => response.json() as Promise<DiscordUser>);
 };
 
 export const getUserFromCode = (accessToken: string) => {
   return getAccessTokenFromCode(accessToken).then((response) =>
     getUserFromAccessToken(response.access_token)
   );
+};
+
+export const addMemberToGuild = (
+  accessToken: string,
+  guildId: string,
+  userId: string
+) => {
+  return fetch(`https://discord.com/guilds/${guildId}/members/${userId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bot ${getEnv("DISCORD_BOT_TOKEN")}`,
+    },
+    body: JSON.stringify({
+      access_token: accessToken,
+      roles: [getEnv("DISCORD_MEMBER_ROLE_ID")],
+    }),
+  });
 };

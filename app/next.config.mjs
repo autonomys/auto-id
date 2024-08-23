@@ -8,6 +8,11 @@ const nextConfig = {
       fs: false, // the solution
     };
 
+    config.module.rules.push({
+      test: /\.node/,
+      use: "node-loader",
+    });
+
     return config;
   },
 };

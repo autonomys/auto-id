@@ -6,7 +6,7 @@ import { FC, Fragment, PropsWithoutRef, ReactNode, useCallback } from 'react'
 
 type Option = {
     key: string
-    text: string
+    text: ReactNode
     onSelected: () => void
 }
 
@@ -19,7 +19,6 @@ export const DropdownButtons: FC<PropsWithoutRef<DropdownButtonsProps>> = ({ opt
 
     const onSelected = useCallback((selected: Option['key']) => {
         const option = options.find((option) => option.key === selected)
-        console.log(selected);
         if (option) {
             option.onSelected()
         }

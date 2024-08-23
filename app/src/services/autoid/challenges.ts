@@ -26,3 +26,9 @@ export const autoScoreSignatureChallenge = ({
       .digest()
   );
 };
+
+export const discordLinkAccessTokenChallenge = (
+  accessToken: string
+): Buffer => {
+  return Buffer.from(blake2b(32).update(Buffer.from(accessToken)).digest());
+};

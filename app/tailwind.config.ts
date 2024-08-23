@@ -10,7 +10,7 @@ const config: Config = {
   theme: {
     screens: {
       lg: "1920px",
-      md: "640px",
+      md: "700px",
       sm: "375px",
     },
     extend: {

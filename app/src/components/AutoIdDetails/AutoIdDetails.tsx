@@ -24,14 +24,15 @@ import { DropdownButtons } from "../common/Dropdown";
 import { getProviderImageByHash } from "./utils";
 import { ClaimSelectorModal } from "./ClaimSelectorModal";
 
-export const AutoIdDetails: FC<{ autoId: string }> = (({
+export const AutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = (({
     autoId,
+    linkToDiscordUrl
 }) => {
     const autoID = useLocalAutoIDs().find(a => a.autoId === autoId)
     if (!autoID) {
         notFound()
     }
-    const { provider, certificatePem, autoScore } = autoID
+    const { provider, certificatePem, autoScore, linkedApps } = autoID
     const updateAutoScore = useUpdateAutoScore()
     const [showClaimSelector, setShowClaimSelector] = useState(false)
 
@@ -151,11 +152,19 @@ export const AutoIdDetails: FC<{ autoId: string }> = (({
                             updateClipboard(pemCertificate);
                             toast.success("Certificate copied to clipboard");
                         }
-                    }
+                    },
+                    ...(linkedApps?.some(({ provider }) => provider === "discord") ? [] : [{
+                        text: <p>Link to Discord</p>,
+                        key: "link-discord",
+                        onSelected: () => {
+                            location.assign(linkToDiscordUrl)
+                        }
+
+                    }])
                 ]}
             />
         ),
-        [certificateHash, pemCertificate]
+        [certificateHash, pemCertificate, linkToDiscordUrl]
     );
 
     const ClaimsComp = useMemo(() => claims.map(claim => {
@@ -234,23 +243,39 @@ export const AutoIdDetails: FC<{ autoId: string }> = (({
             </span>
         </div>
         <span className="w-full md:hidden block">{ActionsButton}</span>
-        <div className="flex flex-col gap-8 w-full mt-10" style={claims.length === 0 ? { display: 'none' } : {}}>
-            <h2 className="text-2xl text-center md:indent-10 md:text-left">
-                Auto-Score
-            </h2>
-            <div className="flex flex-row gap-8 items-center justify-center md:justify-start">
-                <div style={{ background: `conic-gradient(#929EEA 0% ${score}%, #929EEA40 ${score}% 100%)` }} className="flex rounded-circle w-[100px] h-[100px] justify-center items-center ml-10 rotate-90 mr-10">
-                    <div className="flex rounded-circle bg-slate-50 w-[92px] h-[92px] aspect-square justify-center items-center">
-                        <span className="text-4xl text-primary font-semibold -rotate-90 ">{score}</span>
+        <div className="flex flex-col w-full h-full lg:flex-row">
+            <div className="flex flex-col gap-8 w-full mt-10" style={claims.length === 0 ? { display: 'none' } : {}}>
+                <h2 className="text-2xl text-center md:indent-10 md:text-left">
+                    Auto-Score
+                </h2>
+                <div className="flex flex-row gap-8 items-center justify-center md:justify-start">
+                    <div style={{ background: `conic-gradient(#929EEA 0% ${score}%, #929EEA40 ${score}% 100%)` }} className="flex rounded-circle w-[100px] h-[100px] justify-center items-center ml-10 rotate-90 mr-10">
+                        <div className="flex rounded-circle bg-slate-50 w-[92px] h-[92px] aspect-square justify-center items-center">
+                            <span className="text-4xl text-primary font-semibold -rotate-90 ">{score}</span>
+                        </div>
+                    </div>
+                    <div className="hidden min-w-[100px] md:flex flex-row gap-4 justify-center">
+                        {ClaimsComp}
                     </div>
                 </div>
-                <div className="hidden md:flex flex-row gap-4 justify-center">
+                <div className="md:hidden min-w-[100px] flex flex-row gap-4 justify-center">
                     {ClaimsComp}
                 </div>
             </div>
-            <div className="md:hidden flex flex-row gap-4 justify-center">
-                {ClaimsComp}
-            </div>
+            {
+                linkedApps && <div className="flex flex-col gap-8 w-full mt-10" style={claims.length === 0 ? { display: 'none' } : {}}>
+                    <h2 className="text-2xl text-center md:indent-10 md:text-left">
+                        Apps
+                    </h2>
+                    <div className="flex flex-row w-full h-full justify-center md:justify-start md:ml-10">
+                        {
+                            linkedApps.map(e => <a target="_blank" href={e.url}>
+                                <img src={getProviderImageUrl(provider)} className="flex rounded-circle bg-slate-50 w-[92px] h-[92px] aspect-square justify-center items-center" />
+                            </a>)
+                        }
+                    </div>
+                </div>
+            }
         </div>
         {modal}
     </div>

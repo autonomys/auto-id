@@ -1,8 +1,11 @@
-import { ZkpClaimJSON } from "@autonomys/auto-id";
-import { jsonSafeParse } from "../../utils/json";
 import { SignedAutoScore } from "../../types/autoId";
 import { useLocalStorage } from "usehooks-ts";
 import { useCallback } from "react";
+
+export type LinkedApp = {
+  provider: string;
+  url: string;
+};
 
 export type AutoIdInfo = {
   provider: string;
@@ -11,6 +14,7 @@ export type AutoIdInfo = {
   autoIdDigest: string;
   autoId: string;
   autoScore?: SignedAutoScore;
+  linkedApps?: LinkedApp[];
 };
 
 export function useLocalAutoIDs(): AutoIdInfo[] {
@@ -65,6 +69,23 @@ export function useUpdateAutoScore() {
     (autoId: string, autoScore: SignedAutoScore) => {
       const newAutoIds = autoIds.map((a) =>
         a.autoId === autoId ? { ...a, autoScore } : a
+      );
+      setLocalAutoIds(newAutoIds);
+    },
+    [autoIds]
+  );
+}
+
+export function useAddLinkedApp() {
+  const autoIds = useLocalAutoIDs();
+  const setLocalAutoIds = useSetLocalAutoIDs();
+
+  return useCallback(
+    (autoId: string, linkedApp: LinkedApp) => {
+      const newAutoIds = autoIds.map((a) =>
+        a.autoId === autoId
+          ? { ...a, linkedApps: [...(a.linkedApps ?? []), linkedApp] }
+          : a
       );
       setLocalAutoIds(newAutoIds);
     },

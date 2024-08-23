@@ -17,7 +17,6 @@ export const ReclaimQRCode = ({
                 clearInterval(interval)
             }
         }).catch((e) => {
-            console.log(e)
             onDismiss()
         })
     }, [statusUrl, onSuccess, onDismiss])

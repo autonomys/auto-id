@@ -1,9 +1,11 @@
 import { discord, github, google } from "../../../services/auth";
+import { DiscordAction } from "../../../services/auth/discord";
 
 export default function NewAutoId() {
+  const url = discord.discordAuthUrl({ action: DiscordAction.OAuth })
+
   const providerClassNames =
     "aspect-square hover:opacity-85 hover:cursor-pointer w-1/4 bg-white rounded";
-
   return (
     <div className="flex flex-col border border-black rounded p-4 md:w-[60%] min-h-[60%] w-9/10 items-center gap-4 bg-slate-50">
       <h1 className="text text-3xl">Create Auto-ID</h1>
@@ -13,7 +15,7 @@ export default function NewAutoId() {
           <img src="/google.png" className="w-full h-full" />
         </a>
         <a
-          href={discord.AUTH_URL}
+          href={url}
           target="_self"
           className={providerClassNames}
         >
