@@ -4,7 +4,6 @@ import { getDomainApi } from "../../../../../services/autoid/misc";
 import { authenticateAutoIdUser } from "@autonomys/auto-id";
 import { discordLinkAccessTokenChallenge } from "../../../../../services/autoid/challenges";
 import { getEnv } from "../../../../../utils/getEnv";
-import { addMemberToGuild } from "../../../../../services/auth/discord";
 import { NextRequest, NextResponse } from "next/server";
 
 interface LinkRequestBody {
@@ -78,18 +77,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const member = await guild.members.fetch(user.id).catch(() => null);
+    const member = guild.members.cache.find((u) => u.id === user.id);
     if (!member) {
-      return NextResponse.json(
-        {
-          error:
-            "User is not member, try again, if persists contact adminstrator",
-        },
-        { status: 409 }
-      );
+      await guild.members.add(user.id, {
+        roles: [role],
+        accessToken,
+      });
+    } else {
+      await member.roles.add(role);
     }
-
-    await member.roles.add(role);
 
     return NextResponse.json(
       { success: true, guildId: guild.id },

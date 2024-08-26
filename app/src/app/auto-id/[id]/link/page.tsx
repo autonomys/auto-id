@@ -66,7 +66,7 @@ export default function AutoId({ params, searchParams: { access_token } }: { par
         if (!keyringPem || isLinking.current) return
         isLinking.current = true
 
-        ensureServerMember(access_token).then(() => signMessage(discordLinkAccessTokenChallenge(access_token))).then(signature => {
+        signMessage(discordLinkAccessTokenChallenge(access_token)).then(signature => {
             retries(() => linkToDiscord(signature, access_token, id), 3, 3_000).then((linkedApp) => {
                 addLinkedApp(id, linkedApp)
                 setTimeout(() => window.location.replace(`/auto-id/${id}`), 1000)
