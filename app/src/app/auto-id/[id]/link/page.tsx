@@ -9,6 +9,7 @@ import { discordLinkAccessTokenChallenge } from "../../../../services/autoid/cha
 import toast from "react-hot-toast";
 import { LinkedApp, useAddLinkedApp } from "../../../../services/autoid/localStorageDB";
 import { handleHttpResponse } from "../../../../utils/http";
+import { retries } from "../../../../utils/promise";
 
 export default function AutoId({ params, searchParams: { access_token } }: { params: { id: string }, searchParams: { access_token: string } }) {
     const { id } = params;
@@ -65,8 +66,8 @@ export default function AutoId({ params, searchParams: { access_token } }: { par
         if (!keyringPem || isLinking.current) return
         isLinking.current = true
 
-        ensureServerMember(access_token).then(() => new Promise((res) => setTimeout(res, 3_000))).then(() => signMessage(discordLinkAccessTokenChallenge(access_token))).then(signature => {
-            linkToDiscord(signature, access_token, id).then((linkedApp) => {
+        ensureServerMember(access_token).then(() => signMessage(discordLinkAccessTokenChallenge(access_token))).then(signature => {
+            retries(() => linkToDiscord(signature, access_token, id), 3, 3_000).then((linkedApp) => {
                 addLinkedApp(id, linkedApp)
                 setTimeout(() => window.location.replace(`/auto-id/${id}`), 1000)
             }).catch(() => {
