@@ -41,7 +41,7 @@ interface DiscordUser {
 }
 
 export const getAccessTokenFromCode = (code: string) => {
-  const data = qs.stringify({
+  const body = qs.stringify({
     grant_type: "authorization_code",
     code: code,
     redirect_uri: getEnv("DISCORD_AUTH_REDIRECT_URI"),
@@ -57,11 +57,12 @@ export const getAccessTokenFromCode = (code: string) => {
     ),
   };
 
-  return fetch(`https://discord.com/api/oauth2/token?${data}`, {
+  return fetch(`https://discord.com/api/oauth2/token`, {
     headers: headers,
     method: "POST",
+    body,
   })
-    .then((e) => e.json())
+    .then((e) => e.json() as Promise<DiscordAcessTokenResponse>)
     .catch((error) => {
       console.error(error);
       throw error;
