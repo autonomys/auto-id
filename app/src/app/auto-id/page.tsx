@@ -28,9 +28,15 @@ function AutoScore() {
           <PlusIcon className="size-5" />
         </a>
       </div>
-      {autoIDs.map((autoIdInfo) => (
-        <AutoIdCard {...autoIdInfo} />
-      ))}
+      {
+        autoIDs.length > 0 ?
+          autoIDs.map((autoIdInfo) => (
+            <AutoIdCard {...autoIdInfo} />
+          ))
+          : <div className="flex flex-col border border-black rounded p-4 md:w-[60%] w-[80%] bg-slate-50 items-center gap-4 text-slate-500">
+            You have no Auto-IDs, press the button above to create one.
+          </div>
+      }
     </div>
   );
 }
