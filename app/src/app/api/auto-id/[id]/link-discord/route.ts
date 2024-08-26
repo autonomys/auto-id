@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const member = guild.members.cache.find((u) => u.id === user.id);
+    const member = await guild.members.fetch(user.id).catch(() => null);
     if (!member) {
       return NextResponse.json(
         {
