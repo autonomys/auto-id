@@ -1,6 +1,6 @@
 import qs from "qs";
-import axios from "axios";
 import { getEnv } from "../../utils/getEnv";
+import { authBasicHeader } from "../../utils/http";
 
 export type DiscordState =
   | {
@@ -51,16 +51,17 @@ export const getAccessTokenFromCode = (code: string) => {
 
   const headers = {
     "Content-Type": "application/x-www-form-urlencoded",
+    Authorization: authBasicHeader(
+      getEnv("DISCORD_AUTH_CLIENT_ID"),
+      getEnv("DISCORD_AUTH_CLIENT_SECRET")
+    ),
   };
 
-  return axios
-    .post(`https://discord.com/api/oauth2/token`, data, {
-      headers: headers,
-      auth: {
-        username: getEnv("DISCORD_AUTH_CLIENT_ID"),
-        password: getEnv("DISCORD_AUTH_CLIENT_SECRET"),
-      },
-    })
+  return fetch(`https://discord.com/api/oauth2/token?${data}`, {
+    headers: headers,
+    method: "POST",
+  })
+    .then((e) => e.json())
     .then((response) => response.data as DiscordAcessTokenResponse)
     .catch((error) => {
       console.error(error);

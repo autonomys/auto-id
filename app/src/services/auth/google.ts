@@ -1,4 +1,3 @@
-import axios from "axios";
 import { getEnv } from "../../utils/getEnv";
 
 export const AUTH_URL =
@@ -17,9 +16,9 @@ interface GoogleUserProfile {
 export async function getUserProfile(accessToken: string) {
   try {
     const profileUrl = `https://www.googleapis.com/oauth2/v2/userinfo?access_token=${accessToken}`;
-    const response = await axios.get(profileUrl);
+    const data = await fetch(profileUrl).then((e) => e.json());
 
-    return response.data as GoogleUserProfile;
+    return data as GoogleUserProfile;
   } catch (error) {
     console.error("Failed to retrieve user profile:", error);
     throw error;
