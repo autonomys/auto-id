@@ -267,7 +267,7 @@ const InternalAutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = 
                     <div className="flex flex-row w-full h-full justify-center md:justify-start md:ml-10">
                         {
                             linkedApps.map(e => <a target="_blank" href={e.url}>
-                                <img src={getProviderImageUrl(provider)} className="flex rounded-circle bg-slate-50 w-[92px] h-[92px] aspect-square justify-center items-center" />
+                                <img src={getProviderImageUrl(e.provider)} className="flex rounded-circle bg-slate-50 w-[92px] h-[92px] aspect-square justify-center items-center" />
                             </a>)
                         }
                     </div>
