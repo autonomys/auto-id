@@ -62,7 +62,6 @@ export const getAccessTokenFromCode = (code: string) => {
     method: "POST",
   })
     .then((e) => e.json())
-    .then((response) => response.data as DiscordAcessTokenResponse)
     .catch((error) => {
       console.error(error);
       throw error;
