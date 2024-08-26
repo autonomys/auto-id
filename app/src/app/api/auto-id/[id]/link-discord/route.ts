@@ -70,13 +70,7 @@ export async function POST(req: NextRequest) {
     await client.login(botAccessToken);
 
     const guildId = getEnv("DISCORD_GUILD_ID");
-    const guild = await memberEnsuredGuild(
-      client,
-      botAccessToken,
-      accessToken,
-      guildId,
-      user.id
-    );
+    const guild = await client.guilds.fetch(guildId);
 
     const role = guild.roles.cache.find(
       (role) => role.name === getEnv("DISCORD_GRANTED_ROLE")
@@ -100,24 +94,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-async function memberEnsuredGuild(
-  client: Client,
-  botAccessToken: string,
-  accessToken: string,
-  guildId: string,
-  userId: string
-): Promise<Guild> {
-  const guild = await client.guilds.fetch(guildId);
-  const member = guild.members.cache.find((e) => e.id === userId);
-  if (member) {
-    return guild;
-  }
-
-  await addMemberToGuild(botAccessToken, accessToken, guildId, userId).catch(
-    () => {}
-  );
-
-  return client.guilds.fetch(guildId);
 }

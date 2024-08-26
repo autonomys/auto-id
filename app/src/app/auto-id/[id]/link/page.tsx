@@ -33,6 +33,16 @@ export default function AutoId({ params, searchParams: { access_token } }: { par
     }, [keyringPem])
     const addLinkedApp = useAddLinkedApp()
 
+    const ensureServerMember = useCallback(async (accessToken: string) => {
+        return fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/discord/ensure-member`, {
+            body: JSON.stringify({ accessToken }),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(handleHttpResponse)
+    }, [])
+
     const linkToDiscord = useCallback(async (signature: string, accessToken: string, autoId: string) => {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/auto-id/${autoId}/link-discord`, {
             body: JSON.stringify({ accessToken, signature, autoId }),
@@ -55,7 +65,7 @@ export default function AutoId({ params, searchParams: { access_token } }: { par
         if (!keyringPem || isLinking.current) return
         isLinking.current = true
 
-        signMessage(discordLinkAccessTokenChallenge(access_token)).then(signature => {
+        ensureServerMember(access_token).then(() => signMessage(discordLinkAccessTokenChallenge(access_token))).then(signature => {
             linkToDiscord(signature, access_token, id).then((linkedApp) => {
                 addLinkedApp(id, linkedApp)
                 setTimeout(() => window.location.replace(`/auto-id/${id}`), 1000)
