@@ -105,7 +105,5 @@ export const addMemberToGuild = (
     body: JSON.stringify({
       access_token: userAccessToken,
     }),
-  }).then(async (e) => {
-    console.log(await e.text());
-  });
+  }).then(handleHttpResponse);
 };
