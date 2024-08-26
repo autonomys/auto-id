@@ -2,6 +2,7 @@ import { Proof } from '@reclaimprotocol/js-sdk'
 import { useCallback, useEffect } from 'react';
 import Modal from 'react-modal'
 import QRCode from 'react-qr-code';
+import { handleHttpResponse } from '../../utils/http';
 
 export const ReclaimQRCode = ({
     requestUrl,
@@ -11,7 +12,7 @@ export const ReclaimQRCode = ({
 }: { requestUrl: string, statusUrl: string, onDismiss: () => void, onSuccess: (proof: Proof) => void }) => {
 
     const checkStatus = useCallback((interval: NodeJS.Timeout) => {
-        fetch(statusUrl, { method: 'GET' }).then(response => response.json()).then(response => {
+        fetch(statusUrl, { method: 'GET' }).then(handleHttpResponse).then(response => response.json()).then(response => {
             if (response.session.proofs.length > 0) {
                 onSuccess(response.session.proofs[0])
                 clearInterval(interval)

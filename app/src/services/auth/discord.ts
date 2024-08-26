@@ -1,6 +1,6 @@
 import qs from "qs";
 import { getEnv } from "../../utils/getEnv";
-import { authBasicHeader } from "../../utils/http";
+import { authBasicHeader, handleHttpResponse } from "../../utils/http";
 
 export type DiscordState =
   | {
@@ -62,6 +62,7 @@ export const getAccessTokenFromCode = (code: string) => {
     method: "POST",
     body,
   })
+    .then(handleHttpResponse)
     .then((e) => e.json() as Promise<DiscordAcessTokenResponse>)
     .catch((error) => {
       console.error(error);
@@ -78,7 +79,9 @@ export const getUserFromAccessToken = (accessToken: string) => {
       "Access-Control-Allow-Origin": "*",
       Authorization: `Bearer ${accessToken}`,
     },
-  }).then((response) => response.json() as Promise<DiscordUser>);
+  })
+    .then(handleHttpResponse)
+    .then((response) => response.json() as Promise<DiscordUser>);
 };
 
 export const getUserFromCode = (accessToken: string) => {

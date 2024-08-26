@@ -8,6 +8,7 @@ import { pemToPrivateKey } from "@autonomys/auto-id";
 import { discordLinkAccessTokenChallenge } from "../../../../services/autoid/challenges";
 import toast from "react-hot-toast";
 import { LinkedApp, useAddLinkedApp } from "../../../../services/autoid/localStorageDB";
+import { handleHttpResponse } from "../../../../utils/http";
 
 export default function AutoId({ params, searchParams: { access_token } }: { params: { id: string }, searchParams: { access_token: string } }) {
     const { id } = params;
@@ -39,10 +40,9 @@ export default function AutoId({ params, searchParams: { access_token } }: { par
             headers: {
                 'Content-Type': 'application/json'
             }
-        })
+        }).then(handleHttpResponse)
 
         if (response.ok) {
-            debugger
             const { guildId } = await response.json()
             return { provider: 'discord', url: `https://discord.com/channels/${guildId}` } as LinkedApp
         } else {

@@ -1,4 +1,5 @@
 import { getEnv } from "../../utils/getEnv";
+import { handleHttpResponse } from "../../utils/http";
 
 export const AUTH_URL = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_AUTH_CLIENT_ID}`;
 
@@ -25,7 +26,9 @@ export const getAccessTokenFromCode = (code: string) => {
       Accept: "application/json",
       "Access-Control-Allow-Origin": "*",
     },
-  }).then((response) => response.json() as Promise<GithubAcessTokenResponse>);
+  })
+    .then(handleHttpResponse)
+    .then((response) => response.json() as Promise<GithubAcessTokenResponse>);
 };
 
 export const getUserFromAccessToken = (accessToken: string) => {
@@ -37,7 +40,9 @@ export const getUserFromAccessToken = (accessToken: string) => {
       "Access-Control-Allow-Origin": "*",
       Authorization: `Bearer ${accessToken}`,
     },
-  }).then((response) => response.json() as Promise<GithubUser>);
+  })
+    .then(handleHttpResponse)
+    .then((response) => response.json() as Promise<GithubUser>);
 };
 
 export const getUserFromCode = (accessToken: string) => {

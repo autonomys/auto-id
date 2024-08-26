@@ -22,6 +22,7 @@ import { DropdownButtons } from "../common/Dropdown";
 import { getProviderImageByHash } from "./utils";
 import { ClaimSelectorModal } from "./ClaimSelectorModal";
 import dynamic from "next/dynamic";
+import { handleHttpResponse } from "../../utils/http";
 
 const InternalAutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = (({
     autoId,
@@ -68,7 +69,7 @@ const InternalAutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = 
 
         const auth = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/auto-id/start-auth`, {
             method: 'POST',
-        }).then(e => e.json()).then(extractFromHttpResponse<{ metadata: Metadata, signature: string }>)
+        }).then(handleHttpResponse).then(e => e.json()).then(extractFromHttpResponse<{ metadata: Metadata, signature: string }>)
 
 
         console.log("Claiming for auto-id", autoId, "claim", hash);
@@ -77,7 +78,7 @@ const InternalAutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = 
         const claiming = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/auto-id/${autoId}/auto-score/reclaim`, {
             method: 'POST',
             body: JSON.stringify({ claimHash: hash }),
-        }).then(res => res.json() as Promise<ReclaimResponseBody>)
+        }).then(handleHttpResponse).then(res => res.json() as Promise<ReclaimResponseBody>)
 
         setClaimingInfo({ claiming, auth })
         setShowClaimSelector(false)

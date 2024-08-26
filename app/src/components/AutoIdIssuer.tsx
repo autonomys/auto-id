@@ -15,6 +15,7 @@ import { RegisterAutoIdResponseBody } from "../app/api/auto-id/route";
 import { getDomainApi } from "../services/autoid/misc";
 import toast from "react-hot-toast";
 import { useAddLocalAutoID } from "../services/autoid/localStorageDB";
+import { handleHttpResponse } from "../utils/http";
 
 export interface AutoIdIssuerProps {
   autoIdDigest: string;
@@ -80,7 +81,7 @@ export default function AutoIdIssuer({
           "Content-Type": "application/json",
         },
       }
-    );
+    ).then(handleHttpResponse);
 
     const data: RegisterAutoIdResponseBody = await response.json();
 
