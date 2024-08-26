@@ -38,22 +38,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify the signature
-    const api = await getDomainApi();
-    const verificationResult = await authenticateAutoIdUser(
-      api,
-      autoId,
-      discordLinkAccessTokenChallenge(accessToken),
-      Buffer.from(signature, "hex")
-    );
-
-    if (!verificationResult) {
-      return NextResponse.json(
-        { error: "Failed to verify the signature" },
-        { status: 401 }
-      );
-    }
-
     // Verify the user is not already linked
     const botAccessToken = getEnv("DISCORD_BOT_TOKEN");
 
@@ -67,10 +51,21 @@ export async function POST(req: NextRequest) {
       ],
     });
 
-    await client.login(botAccessToken);
+    const promises: [Promise<boolean>, Promise<Guild>] = [
+      verifySignature(autoId, accessToken, signature),
+      getGuild(client, botAccessToken),
+    ];
 
-    const guildId = getEnv("DISCORD_GUILD_ID");
-    const guild = await client.guilds.fetch(guildId);
+    const [isCorrectlySigned, guild]: [boolean, Guild] = await Promise.all(
+      promises
+    );
+
+    if (!isCorrectlySigned) {
+      return NextResponse.json(
+        { error: "Failed to verify the signature" },
+        { status: 401 }
+      );
+    }
 
     const role = guild.roles.cache.find(
       (role) => role.name === getEnv("DISCORD_GRANTED_ROLE")
@@ -95,3 +90,26 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+
+const verifySignature = async (
+  autoId: string,
+  accessToken: string,
+  signature: string
+) => {
+  const api = await getDomainApi();
+  return authenticateAutoIdUser(
+    api,
+    autoId,
+    discordLinkAccessTokenChallenge(accessToken),
+    Buffer.from(signature, "hex")
+  );
+};
+
+const getGuild = async (client: Client, botAccessToken: string) => {
+  await client.login(botAccessToken);
+
+  const guildId = getEnv("DISCORD_GUILD_ID");
+  const guild = await client.guilds.fetch(guildId);
+
+  return guild;
+};
