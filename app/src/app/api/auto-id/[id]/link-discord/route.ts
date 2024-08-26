@@ -81,7 +81,10 @@ export async function POST(req: NextRequest) {
     const member = await guild.members.fetch(user.id);
     await member.roles.add(role);
 
-    return NextResponse.json({ success: true, guildId }, { status: 200 });
+    return NextResponse.json(
+      { success: true, guildId: guild.id },
+      { status: 200 }
+    );
   } catch (e) {
     console.error(e);
     return NextResponse.json(
