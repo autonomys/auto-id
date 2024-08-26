@@ -115,7 +115,9 @@ async function memberEnsuredGuild(
     return guild;
   }
 
-  await addMemberToGuild(botAccessToken, accessToken, guildId, userId);
+  await addMemberToGuild(botAccessToken, accessToken, guildId, userId).catch(
+    () => {}
+  );
 
   return client.guilds.fetch(guildId);
 }
