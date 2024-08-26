@@ -78,7 +78,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const member = await guild.members.fetch(user.id);
+    const member = guild.members.cache.find((u) => u.id === user.id);
+    if (!member) {
+      return NextResponse.json(
+        {
+          error:
+            "User is not member, try again, if persists contact adminstrator",
+        },
+        { status: 409 }
+      );
+    }
+
     await member.roles.add(role);
 
     return NextResponse.json(
