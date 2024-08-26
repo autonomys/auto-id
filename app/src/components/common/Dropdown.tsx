@@ -1,6 +1,6 @@
 'use client'
 
-import { Listbox, ListboxButton, ListboxOption, ListboxOptions, Transition } from '@headlessui/react'
+import { Listbox, ListboxButton, ListboxOption, ListboxOptions, Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { FC, Fragment, PropsWithoutRef, ReactNode, useCallback } from 'react'
 
@@ -25,9 +25,9 @@ export const DropdownButtons: FC<PropsWithoutRef<DropdownButtonsProps>> = ({ opt
     }, [options])
 
     return (
-        <Listbox value={undefined} onChange={onSelected}>
+        <Menu>
             <div className='relative mt-1 w-full'>
-                <ListboxButton className='relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm ring-1 ring-black ring-opacity-5'>
+                <MenuButton className='relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm ring-1 ring-black ring-opacity-5'>
                     <div className='flex'>
                         <span className='ml-2 block truncate'>{buttonText}</span>
                         <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
@@ -37,22 +37,21 @@ export const DropdownButtons: FC<PropsWithoutRef<DropdownButtonsProps>> = ({ opt
                             />
                         </span>
                     </div>
-                </ListboxButton>
-                <ListboxOptions className='absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
+                </MenuButton>
+                <MenuItems className='absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
                     {options.map(({ key, text }) => (
-                        <ListboxOption
+                        <MenuItem
                             key={key}
-                            value={key}
                         >
-                            {({ selected }) => (
-                                <span className={`block p-2 truncate font-normal`}>
+                            {({ }) => (
+                                <span className={`block p-2 truncate font-normal`} onClick={() => onSelected(key)}>
                                     {text}
                                 </span>
                             )}
-                        </ListboxOption>
+                        </MenuItem>
                     ))}
-                </ListboxOptions>
+                </MenuItems>
             </div>
-        </Listbox>
+        </Menu>
     )
 }
