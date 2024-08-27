@@ -77,14 +77,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const member = guild.members.cache.find((u) => u.id === user.id);
+    const member = await guild.members
+      .fetch()
+      .then((members) => members.find((m) => m.id === user.id));
+
     if (!member) {
       await guild.members.add(user.id, {
         roles: [role],
         accessToken,
       });
     } else {
-      const member = await guild.members.fetch(user.id);
       await member.roles.add(role);
     }
 
