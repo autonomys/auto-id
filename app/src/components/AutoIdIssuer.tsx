@@ -40,8 +40,6 @@ export default function AutoIdIssuer({
   >(null);
 
   const onIssueCertificate = useCallback(async () => {
-    console.log(keypairPem.data);
-
     if (!keypairPem?.data) {
       throw new Error("No keypair found");
     }
