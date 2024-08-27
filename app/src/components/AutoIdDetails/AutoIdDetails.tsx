@@ -223,10 +223,11 @@ const InternalAutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = 
 
     return <div className="flex flex-col border border-black rounded p-4 md:w-[60%] w-[80%] bg-slate-50 items-center gap-4">
         <div className="flex flex-row items-center justify-around gap-4 w-full">
-            <img
-                src={getProviderImageUrl(provider)}
-                className="h-[80px] max-w-[33%] aspect-square"
-            />
+            <div style={{ background: `conic-gradient(#929EEA 0% ${score}%, #929EEA40 ${score}% 100%)` }} className="flex rounded-circle w-[90px] h-[90px] justify-center items-center ml-10 rotate-90 mr-10">
+                <div className="flex rounded-circle bg-slate-50 w-[82px] h-[82px] aspect-square justify-center items-center">
+                    <span className="text-4xl text-primary font-semibold -rotate-90 ">{score}</span>
+                </div>
+            </div>
             <div className="flex flex-row gap-2 w-fit-content items-center">
                 <div className="text-lg md:text-2xl font-medium">{shortenAutoId}</div>
                 <div>
@@ -244,17 +245,10 @@ const InternalAutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = 
         <div className="flex flex-col w-full h-full md:flex-row">
             <div className="flex flex-col gap-8 w-full mt-10" style={claims.length === 0 ? { display: 'none' } : {}}>
                 <h2 className="text-2xl text-center md:indent-10 md:text-left">
-                    Auto-Score
+                    Claims
                 </h2>
-                <div className="flex flex-row gap-8 items-center justify-center md:justify-start">
-                    <div style={{ background: `conic-gradient(#929EEA 0% ${score}%, #929EEA40 ${score}% 100%)` }} className="flex rounded-circle w-[100px] h-[100px] justify-center items-center ml-10 rotate-90 mr-10">
-                        <div className="flex rounded-circle bg-slate-50 w-[92px] h-[92px] aspect-square justify-center items-center">
-                            <span className="text-4xl text-primary font-semibold -rotate-90 ">{score}</span>
-                        </div>
-                    </div>
-                    <div className="hidden min-w-[100px] md:flex flex-row gap-4 justify-center">
-                        {ClaimsComp}
-                    </div>
+                <div className="hidden min-w-[100px] md:flex flex-row gap-4 items-center ml-10">
+                    {ClaimsComp}
                 </div>
                 <div className="md:hidden min-w-[100px] flex flex-row gap-4 justify-center">
                     {ClaimsComp}
@@ -265,7 +259,7 @@ const InternalAutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = 
                     <h2 className="text-2xl text-center md:indent-10 md:text-left">
                         Apps
                     </h2>
-                    <div className="flex flex-row w-full h-full justify-center md:justify-start md:ml-10">
+                    <div className="flex flex-row w-full h-full justify-center md:justify-start md:ml-10 gap-4">
                         {
                             linkedApps.map(e => <a target="_blank" href={e.url}>
                                 <img src={getProviderImageUrl(e.provider)} className="flex rounded-circle bg-slate-50 w-[92px] h-[92px] aspect-square justify-center items-center" />
