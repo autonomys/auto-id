@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { InputFileWithButtons } from "./InputFileWithButtons";
 import { useSessionStorage } from "usehooks-ts";
 import {
@@ -40,6 +40,8 @@ export default function AutoIdIssuer({
   >(null);
 
   const onIssueCertificate = useCallback(async () => {
+    console.log(keypairPem.data);
+
     if (!keypairPem?.data) {
       throw new Error("No keypair found");
     }
@@ -59,7 +61,11 @@ export default function AutoIdIssuer({
         setCertificate(certificate.toString("pem"));
       });
     });
-  }, [keypairPem]);
+  }, [keypairPem?.data, autoIdDigest]);
+
+  useEffect(() => {
+    onIssueCertificate()
+  }, [onIssueCertificate])
 
   const autoId = useMemo(
     () => blake2b(32).update(Buffer.from(autoIdDigest)).digest("hex"),
@@ -161,29 +167,19 @@ export default function AutoIdIssuer({
           <InputFileWithButtons
             value={certificate}
             name={`x509 certificate (${certificateHash})`}
-            placeholder={"No certificate"}
+            placeholder={"Issuing certificate..."}
             copyMessage="Certificate copied to clipboard"
             downloadFilename={`cert-${certificateHash}.pem`}
           />
         </div>
       </div>
       <div className="p-8 flex flex-col gap-4">
-        {certificate && (
-          <button
-            onClick={onIssueAutoId}
-            className="font-semibold text-white bg-primary py-2 px-16 rounded-md text-xl hover:opacity-80 hover:scale-101 text-nowrap"
-          >
-            {issuing ? "Issuing..." : "Issue Auto-ID"}
-          </button>
-        )}
-        {certificate === null && (
-          <button
-            onClick={onIssueCertificate}
-            className="font-semibold text-white bg-primary py-2 px-16 rounded-md text-xl hover:opacity-80 hover:scale-101 text-nowrap"
-          >
-            Issue Certificate
-          </button>
-        )}
+        <button
+          onClick={onIssueAutoId}
+          className="font-semibold text-white bg-primary py-2 px-16 rounded-md text-xl hover:opacity-80 hover:scale-101 text-nowrap"
+        >
+          {issuing ? "Issuing..." : "Issue Auto-ID"}
+        </button>
         {issuingError && (
           <p className="text-center text-red-400">
             {issuingError.status === "error"
