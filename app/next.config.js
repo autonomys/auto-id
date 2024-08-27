@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  productionBrowserSourceMaps: true,
   webpack(config) {
     config.resolve.fallback = {
       // if you miss it, all the other options in fallback, specified
