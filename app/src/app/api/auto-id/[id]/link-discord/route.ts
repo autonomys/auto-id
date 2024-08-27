@@ -84,6 +84,7 @@ export async function POST(req: NextRequest) {
         accessToken,
       });
     } else {
+      const member = await guild.members.fetch(user.id);
       await member.roles.add(role);
     }
 
