@@ -7,7 +7,7 @@ export default function AutoId({ params }: { params: { id: string } }) {
     const linkToDiscordUrl = discordAuthUrl({
         action: DiscordAction.AutoIdVerification,
         autoId: id,
-    }, 'identify+email+guilds.join')
+    }, 'identify+guilds.join')
 
     return <AutoIdDetails linkToDiscordUrl={linkToDiscordUrl} autoId={id}></AutoIdDetails>
 }
