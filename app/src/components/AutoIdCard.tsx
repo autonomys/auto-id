@@ -5,7 +5,6 @@ import { Square2StackIcon } from "@heroicons/react/24/outline";
 import { useCopyToClipboard } from "usehooks-ts";
 import toast from "react-hot-toast";
 import { middleShortenString } from "../utils/shortenString";
-import { getProviderImageUrl } from '../utils/provider';
 import { AutoIdInfo } from "../services/autoid/localStorageDB";
 
 export const AutoIdCard = ({
