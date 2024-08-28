@@ -32,7 +32,7 @@ export const AutoIdCard = ({
   return (
     <div className="flex flex-col ring-1 ring-black ring-opacity-10 rounded p-4 md:w-[60%] w-[80%] bg-white shadow-lg items-center gap-4">
       <div className="flex flex-row items-center justify-around gap-4 w-full">
-        <AutoScore score={score} />
+        <span className="hidden md:block"><AutoScore score={score} /></span>
         <div className="flex flex-row gap-2 w-fit-content items-center">
           <div className="text-lg md:text-2xl font-medium">{shortenAutoId}</div>
           <div>
