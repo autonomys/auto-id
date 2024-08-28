@@ -7,6 +7,8 @@ import { redirect } from "next/navigation";
 import { PlusIcon, } from "@heroicons/react/24/outline";
 import { AutoIdCard } from "../../components/AutoIdCard";
 import { useLocalAutoIDs } from "../../services/autoid/localStorageDB";
+import useResetAutoScore from "../../hooks/resetAutoScore";
+import { useEffect } from "react";
 
 function AutoScore() {
   const [keypair] = useSessionStorage<HexPrivateKey | null>("keypair", null);
@@ -14,6 +16,11 @@ function AutoScore() {
   if (!keypair) {
     redirect("/");
   }
+
+  const resetAutoScore = useResetAutoScore()
+  useEffect(() => {
+    resetAutoScore();
+  }, [resetAutoScore]);
 
   const autoIDs = useLocalAutoIDs();
 

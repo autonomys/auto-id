@@ -23,7 +23,7 @@ export function useLocalAutoIDs(): AutoIdInfo[] {
   return autoIDs;
 }
 
-function useSetLocalAutoIDs() {
+export function useSetLocalAutoIDs() {
   const [, setAutoIDs] = useLocalStorage<AutoIdInfo[]>("auto-id", []);
 
   return useCallback(
