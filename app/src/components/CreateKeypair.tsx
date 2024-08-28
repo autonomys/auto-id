@@ -25,7 +25,7 @@ export const CreateKeypair = () => {
   }, [password, setEncryptedKeypair, setKeypair]);
 
   return (
-    <div className="flex flex-col border border-black rounded p-4 md:w-[40%] min-h-[40%] w-9/10 justify-around items-center gap-4 bg-slate-50">
+    <div className="flex flex-col ring-1 ring-black ring-opacity-10 rounded p-4 md:w-[40%] min-h-[40%] w-9/10 justify-around items-center gap-4 bg-white">
       <h2 className="text-3xl">Auto-ID</h2>
       <p className="text-blue text-center text-slate-500">
         Create a password to encrypt your randomly generated keypair.
@@ -36,7 +36,7 @@ export const CreateKeypair = () => {
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="border border-black rounded p-2 h-8"
+        className="ring-1 ring-black ring-opacity-10 rounded p-2 h-8"
       />
       <button
         onClick={onCreateKeypair}

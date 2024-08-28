@@ -16,7 +16,7 @@ export const InputWithCopyButton = ({
 
   return (
     <div
-      className={`flex flex-row justify-between items-center bg-white p-2 gap-2 w-full rounded border border-black ${className}`}
+      className={`flex flex-row justify-between items-center bg-white p-2 gap-2 w-full rounded ring-1 ring-black ring-opacity-10 ${className}`}
     >
       <span className="overflow-hidden text-ellipsis w-2/3 text-nowrap">
         {value}

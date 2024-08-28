@@ -10,3 +10,16 @@ export const getProviderImageUrl = (provider: string) => {
       return "";
   }
 };
+
+export const getProviderName = (provider: string) => {
+  switch (provider) {
+    case "google":
+      return "Google";
+    case "discord":
+      return "Discord";
+    case "github":
+      return "Github";
+    default:
+      return "";
+  }
+};

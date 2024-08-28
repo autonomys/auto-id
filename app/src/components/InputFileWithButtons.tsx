@@ -38,9 +38,8 @@ export const InputFileWithButtons = ({
 
   return (
     <div
-      className={`flex flex-row relative justify-between items-center bg-white p-2 gap-2 w-full rounded border border-black ${className} ${
-        !value && "opacity-50"
-      }`}
+      className={`flex flex-row relative justify-between items-center bg-white p-2 gap-2 w-full rounded ring-1 ring-black ring-opacity-10 ${className} ${!value && "opacity-50"
+        }`}
     >
       {value ? (
         <>

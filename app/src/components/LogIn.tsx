@@ -38,7 +38,7 @@ export const LogIn = () => {
   }, [encryptedKeypair, password, setKeypair]);
 
   return (
-    <div className="flex flex-col border border-black rounded p-4 md:w-[40%] min-h-[40%] w-9/10 justify-around items-center gap-4 bg-slate-50">
+    <div className="flex flex-col ring-1 ring-black ring-opacity-10 rounded p-4 md:w-[40%] min-h-[40%] w-9/10 justify-around items-center gap-4 bg-white">
       <h2 className="text-3xl">Auto-ID</h2>
       <p className="text-blue text-center text-slate-500">
         Use your password to access your auto-id.
@@ -49,7 +49,7 @@ export const LogIn = () => {
         placeholder="Password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        className="border border-black rounded p-2 h-8 w-3/5"
+        className="ring-1 ring-black ring-opacity-10 rounded p-2 h-8 w-3/5"
       />
       <button
         onClick={onUnlock}

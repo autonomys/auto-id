@@ -12,3 +12,16 @@ export const getProviderImageByHash = (hash: string) => {
       return "/github.png";
   }
 };
+
+export const getProviderNameByHash = (hash: string) => {
+  switch (hash) {
+    case SupportedClaimHashes.GithubUsername:
+      return "Github";
+    case SupportedClaimHashes.UberUUID:
+      return "Uber";
+    case SupportedClaimHashes.GoogleEmail:
+      return "Google";
+    default:
+      return "";
+  }
+};

@@ -149,7 +149,7 @@ export default function AutoIdIssuer({
   }, [certificate]);
 
   return (
-    <div className="flex flex-col border border-black rounded md:w-[60%] min-h-[60%] w-9/10 items-center justify-between gap-4 bg-slate-50">
+    <div className="flex flex-col ring-1 ring-black ring-opacity-10 rounded md:w-[60%] min-h-[60%] w-9/10 items-center justify-between gap-4 bg-white">
       <div className="w-1/2 flex flex-col gap-4 p-4">
         <h1 className="text-2xl text-center mb-8">Auto-ID Preview</h1>
         <div className="flex flex-col gap-2">
