@@ -13,11 +13,11 @@ export interface SignableAutoScoreClaim {
 
 export interface SignableAutoScore {
   score: number;
-  claims: SignableAutoScoreClaim[];
   serviceId: string;
 }
 
 export interface SignedAutoScore {
   signature: string;
   data: SignableAutoScore;
+  claims: { claimHash: SupportedClaimHashes; uuid: string }[];
 }

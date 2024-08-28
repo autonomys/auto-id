@@ -105,9 +105,7 @@ const InternalAutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = 
             .slice(0, 8);
     }, [certificatePem]);
 
-    const jsonClaims = useMemo(() => autoScore?.data.claims.map(claim => ({ ...claim, serviceId: autoScore.data.serviceId })), [autoScore]);
-
-    const claims = useMemo(() => jsonClaims?.map(claim => constructZkpClaim(claim)) || [], [jsonClaims]);
+    const claims = useMemo(() => autoScore?.claims?.map(claim => ({ ...claim, serviceId: autoScore.data.serviceId })) ?? [], [autoScore]);
 
     const reclaimPendingClaims = useMemo(() => Object.values(SupportedClaimHashes).filter(hash => {
         return !claims.some(claim => claim.claimHash === hash)

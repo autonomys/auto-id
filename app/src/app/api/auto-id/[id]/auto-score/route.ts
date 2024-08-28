@@ -144,12 +144,10 @@ export async function POST(req: NextRequest) {
     // return auto-score signed object
     const signableAutoScoreData = {
       score,
-      claims: signableClaims,
       serviceId: getEnv("LETSID_SERVER_AUTO_ID"),
     };
     const autoScoreDigest = autoScoreSignatureChallenge({
       score,
-      claims: signableClaims,
       serviceId: getEnv("LETSID_SERVER_AUTO_ID"),
     });
     const signature = await crypto.subtle.sign(
@@ -161,6 +159,10 @@ export async function POST(req: NextRequest) {
     const autoScore: SignedAutoScore = {
       data: signableAutoScoreData,
       signature: Buffer.from(signature).toString("hex"),
+      claims: signableClaims.map((claim) => ({
+        claimHash: claim.claimHash,
+        uuid: claim.uuid,
+      })),
     };
 
     return NextResponse.json<IssueAutoScoreResponseBody>({
