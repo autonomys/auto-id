@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 
 import "./globals.css";
-import { BlurredBackground } from "../components/BlurredBackground";
 
 const inter = Inter({ subsets: ["latin"] });
 
