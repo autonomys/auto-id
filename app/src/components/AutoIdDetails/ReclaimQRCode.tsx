@@ -51,7 +51,7 @@ export const ReclaimQRCode = ({
             <div className="text-center">
             </div>
             <div className="flex justify-center">
-                {isMobile ? <a className='underline' href={requestUrl} target='_blank'>{requestUrl}</a> : <QRCode value={requestUrl} />}
+                {isMobile ? <a className='underline' href={requestUrl} target='_blank'>{requestUrl}</a> : <QRCode className='text-black bg-white' value={requestUrl} />}
             </div>
         </Modal>
     )
