@@ -1,7 +1,7 @@
 import { Proof } from '@reclaimprotocol/js-sdk'
 import { useCallback, useEffect } from 'react';
 import Modal from 'react-modal'
-import QRCode from 'react-qr-code';
+import { QRCodeCanvas } from 'qrcode.react';
 import { handleHttpResponse } from '../../utils/http';
 import { useMediaQuery } from 'usehooks-ts';
 
@@ -51,7 +51,10 @@ export const ReclaimQRCode = ({
             <div className="text-center">
             </div>
             <div className="flex justify-center">
-                {isMobile ? <a className='underline' href={requestUrl} target='_blank'>{requestUrl}</a> : <QRCode className='text-black bg-white' value={requestUrl} />}
+                {
+                    isMobile ? <a className='underline' href={requestUrl} target='_blank'>{requestUrl}</a> :
+                        <QRCodeCanvas bgColor='#000' fgColor='#ffffff' value={requestUrl} />
+                }
             </div>
         </Modal>
     )
