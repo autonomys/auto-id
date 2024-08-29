@@ -29,6 +29,7 @@ export const ReclaimQRCode = ({
     }, [checkStatus])
 
     const isMobile = useMediaQuery('(max-width: 640px)')
+    const isDark = useMediaQuery('(prefers-color-scheme: dark)')
 
     return (
         <Modal isOpen={true}
@@ -53,7 +54,7 @@ export const ReclaimQRCode = ({
             <div className="flex justify-center">
                 {
                     isMobile ? <a className='underline' href={requestUrl} target='_blank'>{requestUrl}</a> :
-                        <QRCodeCanvas bgColor='#000' fgColor='#ffffff' value={requestUrl} />
+                        isDark ? <QRCodeCanvas bgColor='#000' fgColor='#ffffff' value={requestUrl} /> : <QRCodeCanvas value={requestUrl} />
                 }
             </div>
         </Modal>
