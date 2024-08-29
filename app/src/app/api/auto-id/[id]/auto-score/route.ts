@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     if (Date.now() - metadata.timestamp > FIVE_MINUTES) {
       return NextResponse.json<IssueAutoScoreResponseBody>(
         { error: "Timestamp is too old", success: false },
-        { status: 403 }
+        { status: 410 }
       );
     }
 
