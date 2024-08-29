@@ -198,6 +198,18 @@ const InternalAutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = 
             }),
         })
 
+        if (response.status === 409) {
+            setClaimingInfo(null)
+            toast.error("Claim has already assigned to another Auto-ID")
+            return
+        }
+
+        if (response.status === 410) {
+            setClaimingInfo(null)
+            toast.error("Time limit for generating proof has being exceeded")
+            return
+        }
+
         if (response.status !== 200) {
             setClaimingInfo(null)
             toast.error("Failed to issue Auto-Score")
