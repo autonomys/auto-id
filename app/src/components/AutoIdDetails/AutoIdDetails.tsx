@@ -67,15 +67,10 @@ const InternalAutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = 
     } | null>(null)
 
     const onStartReclaimProtocolClaim = useCallback(async (hash: SupportedClaimHashes) => {
-        console.log("Starting reclaim protocol for claim", hash);
 
         const auth = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/auto-id/start-auth`, {
             method: 'POST',
         }).then(handleHttpResponse).then(e => e.json()).then(extractFromHttpResponse<{ metadata: Metadata, signature: string }>)
-
-
-        console.log("Claiming for auto-id", autoId, "claim", hash);
-
 
         const claiming = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/auto-id/${autoId}/auto-score/reclaim`, {
             method: 'POST',
