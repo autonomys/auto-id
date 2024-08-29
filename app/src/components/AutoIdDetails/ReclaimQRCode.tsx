@@ -3,6 +3,7 @@ import { useCallback, useEffect } from 'react';
 import Modal from 'react-modal'
 import QRCode from 'react-qr-code';
 import { handleHttpResponse } from '../../utils/http';
+import { useMediaQuery } from 'usehooks-ts';
 
 export const ReclaimQRCode = ({
     requestUrl,
@@ -27,6 +28,8 @@ export const ReclaimQRCode = ({
         return () => clearInterval(interval)
     }, [checkStatus])
 
+    const isMobile = useMediaQuery('(max-width: 640px)')
+
     return (
         <Modal isOpen={true}
             className="flex flex-col bg-white w-9/10 md:w-1/3 p-6 rounded-lg justify-center gap-4"
@@ -43,12 +46,12 @@ export const ReclaimQRCode = ({
                         <img className='h-8 aspect-square rounded' src='https://www.apple.com/v/app-store/b/images/overview/icon_appstore__ev0z770zyxoy_large_2x.png' />
                     </a>
                 </span>
-                <p className="text-sm text-gray-500">2. Scan the QR code to create your claim</p>
+                <p className="text-sm text-gray-500">2. {!isMobile ? "Scan the QR code" : "Click on the link"} to create your claim</p>
             </div>
             <div className="text-center">
             </div>
             <div className="flex justify-center">
-                <QRCode value={requestUrl} />
+                {isMobile ? <a className='underline' href={requestUrl} target='_blank'>{requestUrl}</a> : <QRCode value={requestUrl} />}
             </div>
         </Modal>
     )
