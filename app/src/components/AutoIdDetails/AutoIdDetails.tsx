@@ -32,7 +32,7 @@ const InternalAutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = 
 }) => {
     const autoID = useLocalAutoIDs().find(a => a.autoId === autoId)!
 
-    const { provider, certificatePem, autoScore, linkedApps } = autoID
+    const { certificatePem, autoScore, linkedApps } = autoID
     const updateAutoScore = useUpdateAutoScore()
     const [showClaimSelector, setShowClaimSelector] = useState(false)
 
