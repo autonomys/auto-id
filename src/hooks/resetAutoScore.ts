@@ -28,7 +28,7 @@ const useResetAutoScore = () => {
         setAutoIds(newAutoIDs);
       }
     }
-  }, [autoScoreTimestamp, setAutoIds, setAutoScoreTimestamp]);
+  }, [autoIDs, autoScoreTimestamp, setAutoIds, setAutoScoreTimestamp]);
 };
 
 export default useResetAutoScore;

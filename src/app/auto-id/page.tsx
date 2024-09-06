@@ -38,7 +38,7 @@ function AutoScore() {
       {
         autoIDs.length > 0 ?
           autoIDs.map((autoIdInfo) => (
-            <AutoIdCard {...autoIdInfo} />
+            <AutoIdCard key={autoIdInfo.autoId} {...autoIdInfo} />
           ))
           : <div className="flex flex-col ring-1 ring-black ring-opacity-10 rounded p-4 md:w-[60%] w-[80%] bg-white items-center gap-4 text-slate-500">
             You have no Auto-IDs, press the button above to create one.

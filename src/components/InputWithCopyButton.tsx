@@ -12,7 +12,7 @@ export const InputWithCopyButton = ({
   const onClick = useCallback(() => {
     toast("Auto-ID copied to clipboard");
     updateClipboard(value);
-  }, []);
+  }, [value, updateClipboard]);
 
   return (
     <div

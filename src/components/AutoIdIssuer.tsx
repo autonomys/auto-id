@@ -135,7 +135,7 @@ export default function AutoIdIssuer({
         }
       );
     }
-  }, [certificate, autoId]);
+  }, [certificate, autoId, addAutoId, autoIdDigest, provider, uuid]);
 
   const certificateHash = useMemo(() => {
     if (!certificate) {

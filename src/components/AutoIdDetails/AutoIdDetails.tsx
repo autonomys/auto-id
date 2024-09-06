@@ -279,7 +279,7 @@ const InternalAutoIdDetails: FC<{ autoId: string, linkToDiscordUrl: string }> = 
                     </h2>
                     <div className="flex flex-row w-full h-full justify-center md:justify-start md:ml-10 gap-4">
                         {
-                            linkedApps.map((app, index) => <a href={app.url} target="_blank">
+                            linkedApps.map((app, index) => <a key={index} href={app.url} target="_blank">
                                 <MotionDiv
                                     key={index}
                                     whileHover={{ scale: 1.05 }}

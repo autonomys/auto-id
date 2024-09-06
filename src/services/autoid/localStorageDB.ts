@@ -17,51 +17,43 @@ export type AutoIdInfo = {
   linkedApps?: LinkedApp[];
 };
 
-export function useLocalAutoIDs(): AutoIdInfo[] {
+export const useLocalAutoIDs = () => {
   const [autoIDs] = useLocalStorage<AutoIdInfo[]>("auto-id", []);
 
   return autoIDs;
-}
+};
 
-export function useSetLocalAutoIDs() {
+export const useSetLocalAutoIDs = () => {
   const [, setAutoIDs] = useLocalStorage<AutoIdInfo[]>("auto-id", []);
 
   return useCallback(
     (autoIds: AutoIdInfo[]) => setAutoIDs(autoIds),
     [setAutoIDs]
   );
-}
+};
 
-export function useAddLocalAutoID() {
+export const useAddLocalAutoID = () => {
   const [autoIDs, setAutoIDs] = useLocalStorage<AutoIdInfo[]>("auto-id", []);
 
   return useCallback(
     (autoId: AutoIdInfo) => {
       setAutoIDs([...autoIDs, autoId]);
     },
-    [autoIDs]
+    [autoIDs, setAutoIDs]
   );
-}
+};
 
-export function removeLocalAutoID(autoId: AutoIdInfo) {
+export const useRemoveLocalAutoID = (autoId: AutoIdInfo) => {
   const autoIds = useLocalAutoIDs();
   const newAutoIds = autoIds.filter((a) => a.autoId !== autoId.autoId);
   const setLocalAutoIds = useSetLocalAutoIDs();
 
   return useCallback(() => {
     setLocalAutoIds(newAutoIds);
-  }, [newAutoIds]);
-}
+  }, [newAutoIds, setLocalAutoIds]);
+};
 
-export function resetLocalAutoIds() {
-  const setLocalAutoIds = useSetLocalAutoIDs();
-
-  return useCallback(() => {
-    setLocalAutoIds([]);
-  }, []);
-}
-
-export function useUpdateAutoScore() {
+export const useUpdateAutoScore = () => {
   const autoIds = useLocalAutoIDs();
   const setLocalAutoIds = useSetLocalAutoIDs();
 
@@ -72,11 +64,11 @@ export function useUpdateAutoScore() {
       );
       setLocalAutoIds(newAutoIds);
     },
-    [autoIds]
+    [autoIds, setLocalAutoIds]
   );
-}
+};
 
-export function useAddLinkedApp() {
+export const useAddLinkedApp = () => {
   const autoIds = useLocalAutoIDs();
   const setLocalAutoIds = useSetLocalAutoIDs();
 
@@ -89,6 +81,6 @@ export function useAddLinkedApp() {
       );
       setLocalAutoIds(newAutoIds);
     },
-    [autoIds]
+    [autoIds, setLocalAutoIds]
   );
-}
+};
